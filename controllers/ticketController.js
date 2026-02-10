@@ -1,29 +1,51 @@
-const puppeteer = require("puppeteer");
+const html_to_pdf = require("html-pdf-node");
 const { PDFDocument } = require("pdf-lib");
-const ticketTemplate = require("../templates/ticketTemplate");
+const path = require("path");
 
 exports.generateTicket = async (req, res) => {
   try {
-    const data = req.body;
-    const html = ticketTemplate(data);
+    const { templateName, ...data } = req.body;
 
-    // 1. Lanzar Puppeteer para renderizar el HTML
-    const browser = await puppeteer.launch({ headless: "new" });
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
-    const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
-    await browser.close();
+    if (!templateName) {
+      return res
+        .status(400)
+        .json({ error: "Debes proporcionar un templateName" });
+    }
 
-    // 2. Usar pdf-lib para procesar el buffer (opcional: añadir metadatos)
+    // 1. Importar el template
+    const templatePath = path.join(
+      __dirname,
+      "../templates",
+      `${templateName}.js`,
+    );
+    const selectedTemplate = require(templatePath);
+    const html = selectedTemplate(data);
+
+    // 2. Configuración de generación
+    let options = {
+      format: "A4",
+      printBackground: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"], // Sigue siendo necesario en Linux
+    };
+
+    let file = { content: html };
+
+    // 3. Generar PDF (Retorna una Promesa con el Buffer)
+    const pdfBuffer = await html_to_pdf.generatePdf(file, options);
+
+    // 4. Opcional: Metadatos con pdf-lib
     const pdfDoc = await PDFDocument.load(pdfBuffer);
-    pdfDoc.setTitle(`Ticket de Reserva - ${data.reservaCodigo}`);
+    pdfDoc.setTitle(`Ticket - ${data.reservaCodigo || "Sin Titulo"}`);
     const finalPdfBytes = await pdfDoc.save();
 
-    // 3. Enviar respuesta
+    // 5. Enviar
     res.contentType("application/pdf");
     res.send(Buffer.from(finalPdfBytes));
   } catch (error) {
-    console.error(error);
+    console.error("Error con html-pdf-node:", error);
+    if (error.code === "MODULE_NOT_FOUND") {
+      return res.status(404).json({ error: "Template no encontrado" });
+    }
     res.status(500).json({ error: "Error al generar el PDF" });
   }
 };
