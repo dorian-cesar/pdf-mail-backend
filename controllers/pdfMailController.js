@@ -7,7 +7,10 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 exports.sendExistingPdf = async (req, res) => {
   const { email, pdfBase64, fileName, pasajeroNombre, reservaCodigo } =
     req.body;
-
+  console.log("Datos recibidos en el controlador:", {
+    email,
+    pdfBase64: pdfBase64,
+  });
   // Validación básica
   if (!email || !pdfBase64) {
     return res
