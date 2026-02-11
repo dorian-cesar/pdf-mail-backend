@@ -5,7 +5,11 @@ const mailRoutes = require("./routes/mailRoutes");
 const pdfMailRoutes = require("./routes/pdfMailRoutes");
 
 const app = express();
-app.use(express.json());
+
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
+//app.use(express.json());
 
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/mail", mailRoutes);
