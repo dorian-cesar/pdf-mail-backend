@@ -19,7 +19,22 @@ exports.generateTicket = async (req, res) => {
       `${templateName}.js`,
     );
     const selectedTemplate = require(templatePath);
-    const html = selectedTemplate(data);
+
+    // Leer el logo y convertilo a base64 (igual que en mailController)
+    const fs = require("fs");
+    const logoPath = path.join(__dirname, "../public/images/logo-boletos.png");
+    let logoBase64 = "";
+    try {
+      if (fs.existsSync(logoPath)) {
+        logoBase64 = fs.readFileSync(logoPath).toString("base64");
+      } else {
+        console.warn("Logo no encontrado en:", logoPath);
+      }
+    } catch (err) {
+      console.error("Error al leer el logo:", err.message);
+    }
+
+    const html = selectedTemplate({ ...data, logoBase64 });
 
     // 2. Configuración de generación
     let options = {
