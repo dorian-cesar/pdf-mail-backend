@@ -63,7 +63,7 @@ exports.sendTicketByEmail = async (req, res) => {
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; width: 100%;">
           
-          <div style="margin-bottom: 24px;">
+          <div style="margin-bottom: 24px; margin-top: 12px;">
             <img 
               src="cid:logo" 
               alt="boletos.la" 
