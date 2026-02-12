@@ -25,7 +25,18 @@ exports.sendTicketByEmail = async (req, res) => {
       `${templateName}.js`,
     );
     const selectedTemplate = require(templatePath);
-    const html = selectedTemplate(data);
+
+    // Leer el logo y convertirlo a base64
+    const fs = require("fs");
+    const logoPath = path.join(__dirname, "../public/images/logo-boletos.png");
+    let logoBase64 = "";
+    try {
+      logoBase64 = fs.readFileSync(logoPath).toString("base64");
+    } catch (err) {
+      console.error("Error al leer el logo:", err.message);
+    }
+
+    const html = selectedTemplate({ ...data, logoBase64 });
 
     // 2. Configuración para la generación del PDF
     const options = {
@@ -53,7 +64,7 @@ exports.sendTicketByEmail = async (req, res) => {
         <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 30px;">
             <img 
-              src="https://boletos.la/images/logo-boletos.png" 
+              src="cid:logo" 
               alt="boletos.la" 
               style="max-width: 180px; height: auto;"
               onerror="this.style.display='none'"
@@ -99,6 +110,13 @@ exports.sendTicketByEmail = async (req, res) => {
           filename: `pasaje_${data.reservaCodigo || "boletos"}.pdf`,
           type: "application/pdf",
           disposition: "attachment",
+        },
+        {
+          content: logoBase64,
+          filename: "logo-boletos.png",
+          type: "image/png",
+          disposition: "inline",
+          content_id: "logo",
         },
       ],
     };

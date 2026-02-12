@@ -350,7 +350,7 @@ const modernTicket = (data) => `
     <div class="ticket-container">
       <!-- Encabezado -->
       <div class="header">
-        <img src="/public/images/logo-boletos.png" alt="boletos.la" class="company-logo">
+        <img src="data:image/png;base64,${data.logoBase64}" alt="boletos.la" class="company-logo">
         <div class="ticket-type">BOLETO ELECTRÓNICO</div>
       </div>
 
@@ -454,7 +454,7 @@ const modernTicket = (data) => `
           Este boleto es intransferible. Válido únicamente para la fecha y horario especificados.
         </div>
         <div class="company-info">
-          <img src="/public/images/logo-boletos.png" alt="boletos.la" class="footer-logo">
+          <img src="data:image/png;base64,${data.logoBase64}" alt="boletos.la" class="footer-logo">
           <div>Boleto generado electrónicamente - ${new Date().toLocaleDateString("es-ES")}</div>
           <div>Sistema de reservas © ${new Date().getFullYear()}</div>
         </div>
