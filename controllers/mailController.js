@@ -61,47 +61,59 @@ exports.sendTicketByEmail = async (req, res) => {
       subject: `Tu pasaje está confirmado - ${data.reservaCodigo || "boletos.la"}`,
       text: `Hola ${data.pasajeroNombre || "Pasajero/a"}, tu compra fue exitosa. Adjunto encontrarás tu pasaje en formato PDF. ¡Gracias por viajar con boletos.la!`,
       html: `
-        <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 30px;">
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; width: 100%;">
+          
+          <div style="margin-bottom: 24px;">
             <img 
               src="cid:logo" 
               alt="boletos.la" 
-              style="max-width: 180px; height: auto;"
+              style="max-width: 140px; height: auto;"
               onerror="this.style.display='none'"
             >
           </div>
           
-          <h3 style="color: #ff6700; margin-bottom: 20px; font-weight: 600;">Hola ${data.pasajeroNombre || "Pasajero/a"},</h3>
+          <p style="font-size: 16px; line-height: 1.5; margin: 0 0 16px 0; color: #333;">
+            Hola ${data.pasajeroNombre || "Pasajero/a"},
+          </p>
           
-          <p style="font-size: 16px; line-height: 1.5; margin-bottom: 15px; font-weight: 400;">
+          <p style="font-size: 16px; line-height: 1.5; margin: 0 0 16px 0; color: #333;">
             Tu compra se realizó con éxito. 🚌✨
           </p>
           
-          <p style="font-size: 16px; line-height: 1.5; margin-bottom: 15px; font-weight: 400;">
-            Adjuntamos tu pasaje electrónico.
+          <p style="font-size: 16px; line-height: 1.5; margin: 0 0 16px 0; color: #333;">
+            Adjuntamos tu pasaje electrónico en formato PDF.
           </p>
           
-          <div style="background-color: #fff4e5; border-left: 4px solid #ff6700; padding: 15px; margin-bottom: 25px;">
-            <p style="font-size: 14px; color: #333; margin: 0; font-weight: 400;">
-              Podés presentarlo en tu dispositivo móvil o impreso.<br>
-              No olvides llevar tu documento de identidad.
-            </p>
-          </div>
+          <table style="width: 100%; margin-bottom: 24px;">
+            <tr>
+              <td style="background-color: #f5f7fa; padding: 16px; border-radius: 4px;">
+                <p style="font-size: 14px; line-height: 1.5; margin: 0 0 8px 0; color: #555;">
+                  <span style="font-weight: 600;">Código de reserva:</span> 
+                  <span style="color: #ff6700; font-weight: 600;">${data.reservaCodigo || "N/A"}</span>
+                </p>
+                <p style="font-size: 14px; line-height: 1.5; margin: 0; color: #555;">
+                  Podés presentar el pasaje en tu dispositivo móvil o impreso.<br>
+                  No olvides llevar tu documento de identidad.
+                </p>
+              </td>
+            </tr>
+          </table>
           
-          <p style="font-size: 14px; line-height: 1.5; margin-bottom: 30px; font-weight: 500;">
-            Gracias por elegir <strong style="color: #ff6700; font-weight: 700;">boletos.la</strong>.
+          <p style="font-size: 15px; line-height: 1.5; margin: 0 0 8px 0; color: #333;">
+            Gracias por elegir <span style="color: #ff6700; font-weight: 600;">boletos.la</span>.
           </p>
           
-          <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 25px 0;">
+          <hr style="border: none; border-top: 1px solid #eaeef2; margin: 32px 0 24px 0;">
           
-          <div style="text-align: center;">
-            <p style="font-size: 12px; color: #666; margin-bottom: 5px; font-weight: 500;">
-              Código de reserva: <strong style="color: #ff6700; font-weight: 700;">${data.reservaCodigo || "N/A"}</strong>
-            </p>
-            <p style="font-size: 11px; color: #999; margin-top: 20px; font-weight: 400;">
+          <div style="font-size: 12px; color: #7b8a9b; line-height: 1.5;">
+            <p style="margin: 0 0 4px 0;">
               © ${new Date().getFullYear()} boletos.la - Todos los derechos reservados
             </p>
+            <p style="margin: 0; font-size: 11px;">
+              Este es un email automático, por favor no responder.
+            </p>
           </div>
+          
         </div>
       `,
       attachments: [
