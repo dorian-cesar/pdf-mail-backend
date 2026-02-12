@@ -47,15 +47,56 @@ exports.sendTicketByEmail = async (req, res) => {
     const msg = {
       to: emailDestino,
       from: process.env.EMAIL_FROM,
-      subject: `Tu Documento Confirmado - ${data.reservaCodigo || "Ticket"}`,
-      text: "Adjunto encontrarás tu documento en formato PDF.",
-      html: `<h3>Hola ${data.pasajeroNombre || "Pasajero"},</h3>
-             <p>Gracias por tu compra. Adjunto enviamos tu ticket generado con el diseño: <strong>${templateName}</strong>.</p>`,
+      subject: `Tu pasaje está confirmado - ${data.reservaCodigo || "boletos.la"}`,
+      text: `Hola ${data.pasajeroNombre || "Pasajero/a"}, tu compra fue exitosa. Adjunto encontrarás tu pasaje en formato PDF. ¡Gracias por viajar con boletos.la!`,
+      html: `
+        <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <img 
+              src="https://boletos.la/images/logo.png" 
+              alt="boletos.la" 
+              style="max-width: 180px; height: auto;"
+              onerror="this.style.display='none'"
+            >
+          </div>
+          
+          <h3 style="color: #ff6700; margin-bottom: 20px; font-weight: 600;">Hola ${data.pasajeroNombre || "Pasajero/a"},</h3>
+          
+          <p style="font-size: 16px; line-height: 1.5; margin-bottom: 15px; font-weight: 400;">
+            Tu compra se realizó con éxito. 🚌✨
+          </p>
+          
+          <p style="font-size: 16px; line-height: 1.5; margin-bottom: 15px; font-weight: 400;">
+            Adjuntamos tu pasaje electrónico.
+          </p>
+          
+          <div style="background-color: #fff4e5; border-left: 4px solid #ff6700; padding: 15px; margin-bottom: 25px;">
+            <p style="font-size: 14px; color: #333; margin: 0; font-weight: 400;">
+              Podés presentarlo en tu dispositivo móvil o impreso.<br>
+              No olvides llevar tu documento de identidad.
+            </p>
+          </div>
+          
+          <p style="font-size: 14px; line-height: 1.5; margin-bottom: 30px; font-weight: 500;">
+            Gracias por elegir <strong style="color: #ff6700; font-weight: 700;">boletos.la</strong>.
+          </p>
+          
+          <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 25px 0;">
+          
+          <div style="text-align: center;">
+            <p style="font-size: 12px; color: #666; margin-bottom: 5px; font-weight: 500;">
+              Código de reserva: <strong style="color: #ff6700; font-weight: 700;">${data.reservaCodigo || "N/A"}</strong>
+            </p>
+            <p style="font-size: 11px; color: #999; margin-top: 20px; font-weight: 400;">
+              © ${new Date().getFullYear()} boletos.la - Todos los derechos reservados
+            </p>
+          </div>
+        </div>
+      `,
       attachments: [
         {
-          // Convertimos el buffer a base64 limpio para SendGrid
           content: pdfBuffer.toString("base64"),
-          filename: `${templateName}_${data.reservaCodigo || "doc"}.pdf`,
+          filename: `pasaje_${data.reservaCodigo || "boletos"}.pdf`,
           type: "application/pdf",
           disposition: "attachment",
         },
@@ -72,11 +113,9 @@ exports.sendTicketByEmail = async (req, res) => {
     console.error("Error en MailController:", error.message);
 
     if (error.code === "MODULE_NOT_FOUND") {
-      return res
-        .status(404)
-        .json({
-          error: `No se encontró el archivo de template: ${templateName}`,
-        });
+      return res.status(404).json({
+        error: `No se encontró el archivo de template: ${templateName}`,
+      });
     }
 
     res.status(500).json({
