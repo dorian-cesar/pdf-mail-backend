@@ -17,7 +17,7 @@ const modernTicket = (data) => `
         font-family: 'Inter', sans-serif;
         font-size: 11px;
         line-height: 1.4;
-        color: #1f2937;
+        color: #1a2332;
         background: #ffffff;
         width: 210mm;
         height: 297mm;
@@ -34,7 +34,7 @@ const modernTicket = (data) => `
 
       /* Encabezado */
       .header {
-        background: #ff6700;
+        background: #1a2332;
         color: white;
         padding: 20px 30px;
         border-radius: 12px;
@@ -43,11 +43,10 @@ const modernTicket = (data) => `
         box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
       }
 
-      .company-name {
-        font-size: 28px;
-        font-weight: 800;
+      .company-logo {
+        max-width: 180px;
+        height: auto;
         margin-bottom: 5px;
-        letter-spacing: -0.5px;
       }
 
       .ticket-type {
@@ -88,7 +87,7 @@ const modernTicket = (data) => `
       .location-name {
         font-size: 22px;
         font-weight: 700;
-        color: #1e293b;
+        color: #ff6700;
         margin-bottom: 5px;
       }
 
@@ -209,7 +208,7 @@ const modernTicket = (data) => `
       .code-value {
         font-size: 22px;
         font-weight: 800;
-        color: #0c4a6e;
+        color: #ff6700;
         letter-spacing: 2px;
         font-family: 'Courier New', monospace;
       }
@@ -248,7 +247,7 @@ const modernTicket = (data) => `
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #1e293b;
+        background: #1a2332;
         padding: 18px 20px;
         border-radius: 6px;
         color: white;
@@ -264,7 +263,7 @@ const modernTicket = (data) => `
       .total-value {
         font-size: 24px;
         font-weight: 800;
-        color: white;
+        color: #ff6700;
       }
 
       /* Footer */
@@ -279,7 +278,7 @@ const modernTicket = (data) => `
       .footer-title {
         font-size: 16px;
         font-weight: 700;
-        color: #1e293b;
+        color: #ff6700;
         text-align: center;
         margin-bottom: 15px;
       }
@@ -325,9 +324,9 @@ const modernTicket = (data) => `
         color: #94a3b8;
       }
 
-      .company-logo {
-        font-weight: 700;
-        color: #3b82f6;
+      .footer-logo {
+        max-width: 80px;
+        height: auto;
       }
 
       /* Responsive para impresión */
@@ -351,7 +350,7 @@ const modernTicket = (data) => `
     <div class="ticket-container">
       <!-- Encabezado -->
       <div class="header">
-        <div class="company-name">${data.empresa || "BusExpress"}</div>
+        <img src="/public/images/logo-boletos.png" alt="boletos.la" class="company-logo">
         <div class="ticket-type">BOLETO ELECTRÓNICO</div>
       </div>
 
@@ -455,7 +454,7 @@ const modernTicket = (data) => `
           Este boleto es intransferible. Válido únicamente para la fecha y horario especificados.
         </div>
         <div class="company-info">
-          <div class="company-logo">BOLETOS.LA</div>
+          <img src="/public/images/logo-boletos.png" alt="boletos.la" class="footer-logo">
           <div>Boleto generado electrónicamente - ${new Date().toLocaleDateString("es-ES")}</div>
           <div>Sistema de reservas © ${new Date().getFullYear()}</div>
         </div>

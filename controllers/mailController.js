@@ -53,7 +53,7 @@ exports.sendTicketByEmail = async (req, res) => {
         <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 30px;">
             <img 
-              src="https://boletos.la/images/logo.png" 
+              src="https://boletos.la/images/logo-boletos.png" 
               alt="boletos.la" 
               style="max-width: 180px; height: auto;"
               onerror="this.style.display='none'"
