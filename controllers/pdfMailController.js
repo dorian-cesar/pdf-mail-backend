@@ -2,7 +2,7 @@ const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 const sgMail = require("@sendgrid/mail");
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+sgMail.setApiKey(process.env.SENDGRID_API_KEY_BOLETOS);
 
 exports.sendExistingPdf = async (req, res) => {
   const { email, pdfBase64, fileName, pasajeroNombre, reservaCodigo } =
@@ -24,7 +24,7 @@ exports.sendExistingPdf = async (req, res) => {
 
     const msg = {
       to: email,
-      from: process.env.EMAIL_FROM,
+      from: process.env.EMAIL_FROM_BOLETOS,
       subject: `Confirmación de Pasaje - ${reservaCodigo || "Ticket"}`,
       text: `Hola ${pasajeroNombre}, tu pasaje ha sido confirmado. Adjunto encontrarás el PDF.`,
       html: `

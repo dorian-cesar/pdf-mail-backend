@@ -4,7 +4,7 @@ const path = require("path");
 
 exports.generateTicket = async (req, res) => {
   try {
-    const { templateName, ...data } = req.body;
+    const { templateName, logo, ...data } = req.body;
 
     if (!templateName) {
       return res
@@ -20,9 +20,24 @@ exports.generateTicket = async (req, res) => {
     );
     const selectedTemplate = require(templatePath);
 
+    const allowedLogos = [
+      "logo-boletos.png",
+      "logo-pullmanbus.png",
+    ];
+
     // Leer el logo y convertilo a base64 (igual que en mailController)
     const fs = require("fs");
-    const logoPath = path.join(__dirname, "../public/images/logo-boletos.png");
+
+    const logoFile = allowedLogos.includes(logo)
+      ? logo
+      : "logo-boletos.png";
+
+    const logoPath = path.join(
+      __dirname,
+      "../public/images",
+      logoFile
+    );
+    
     let logoBase64 = "";
     try {
       if (fs.existsSync(logoPath)) {
