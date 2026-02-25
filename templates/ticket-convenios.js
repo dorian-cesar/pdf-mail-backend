@@ -6,7 +6,7 @@ const modernCorporateTicket = (data) => `
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap');
 
         * {
             margin: 0;
@@ -15,263 +15,268 @@ const modernCorporateTicket = (data) => `
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             width: 210mm;
-            height: 297mm;
-            padding: 15mm;
+            min-height: 297mm;
+            padding: 20mm;
             background: #ffffff;
-            font-size: 11px;
-            color: #1a1a1a;
+            font-size: 12px;
+            color: #333;
+            line-height: 1.4;
         }
 
-        .ticket {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .company-logo {
-            max-width: 180px;
-            height: auto;
-            margin-bottom: 5px;
+        .ticket-container {
+            max-width: 700px;
+            margin: 0 auto;
         }
 
         /* HEADER */
         .header {
-            background: linear-gradient(135deg, #023caf 0%, #012b8f 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 14px;
-            margin-bottom: 25px;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .badge {
-            background: #ff6700;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        .pnr {
-            margin-top: 15px;
-            font-size: 18px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: #ff6700;
-        }
-
-        /* VIAJE */
-        .trip {
-            background: #f5f8ff;
-            border: 2px solid #e6ecff;
-            border-radius: 12px;
-            padding: 20px;
             margin-bottom: 20px;
         }
 
-        .route {
-            font-size: 18px;
-            font-weight: 800;
-            color: #023caf;
+        .header h4 {
+            color: #666;
+            font-weight: 400;
+            font-size: 11px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .brand-logo {
+            width: 280px;
             margin-bottom: 15px;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+        .disclaimer {
+            font-size: 11px;
+            color: #888;
+            max-width: 90%;
+            margin-bottom: 20px;
         }
 
-        .item-label {
-            font-size: 10px;
-            text-transform: uppercase;
-            color: #666;
-            margin-bottom: 3px;
-        }
-
-        .item-value {
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .seat-price {
-            margin-top: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 10px;
-            border-top: 1px solid #ddd;
-        }
-
-        .seat {
+        .section-title {
+            color: #ff6600;
             font-weight: 700;
             font-size: 14px;
-        }
-
-        .price {
-            font-weight: 800;
-            font-size: 16px;
-            color: #ff6700;
-        }
-
-        .info {
-            display: flex;
-            gap: 20px;
-            width: 100%;
-        }
-
-        .info .trip {
-            flex: 1;
-        }
-
-        .trip h3 {
-            color: #023caf;
             margin-bottom: 10px;
-            font-size: 13px;
-            text-transform: uppercase;
         }
 
-        .passenger-name {
-            font-size: 17px;
+        /* TABLA DE DATOS */
+        .data-box {
+            border: 1px solid #999;
+            padding: 15px 25px;
+            margin-bottom: 10px;
+        }
+
+        .row {
+            display: flex;
+            margin-bottom: 4px;
+        }
+
+        .label {
+            width: 160px;
+            font-weight: 800;
+            font-size: 11px;
+        }
+
+        .value {
+            flex: 1;
+            font-size: 11px;
+        }
+
+        .value-bold {
             font-weight: 700;
-            margin-bottom: 8px;
         }
 
-        /* PAGO */
-        .payment {
-            border: 2px solid #023caf;
-            border-radius: 14px;
-            padding: 20px;
-            margin-bottom: 20px;
-            background: #f9fbff;
-        }
-
+        /* PAGO Y ASIENTO */
         .payment-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            align-items: center;
+            margin-top: 15px;
         }
 
-        .total {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 2px solid #023caf;
-            display: flex;
-            justify-content: space-between;
-            font-size: 18px;
+        .total-box {
+            font-size: 16px;
             font-weight: 800;
-            color: #ff6700;
         }
 
-        .footer {
-            margin-top: auto;
-            text-align: center;
+        .total-amount {
+            font-size: 20px;
+            margin-left: 10px;
+        }
+
+        /* SEPARADOR */
+        .divider {
+            border-top: 1px dashed #999;
+            margin: 20px 0 30px 0;
+            position: relative;
+        }
+
+        .copy-label {
+            text-align: end;
+            color: #ff6600;
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        /* COPIA EMPRESA / BARCODE SECTION */
+        .barcode-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #999;
+            padding: 20px;
+        }
+
+        .barcode-placeholder {
+            font-family: 'Libre Barcode 128', cursive;
+            /* Opcional si usas fuente de barras */
+            font-size: 40px;
+            margin-bottom: 5px;
+        }
+
+        .barcode-data {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            width: 100%;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .footer-note {
+            border: 1px solid #333;
+            padding: 10px;
+            font-weight: 800;
+            text-align: left;
             font-size: 10px;
-            color: #666;
-            border-top: 1px solid #ddd;
-            padding-top: 15px;
         }
 
         @media print {
             body {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+                padding: 0;
+            }
+
+            .ticket-container {
+                width: 100%;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="ticket">
-
-        ${data.logoBase64 ? `<img src="data:image/png;base64,${data.logoBase64}" class="company-logo">` : ''}
-
-        <!-- HEADER -->
+    <div class="ticket-container">
         <div class="header">
-            <div class="header-top">
-                <div>
-                    <h1>${data.convenio?.nombre}</h1>
-                    <div>Ticket N° ${data.numero_ticket}</div>
-                </div>
-                <div class="badge">${data.estado?.toUpperCase()}</div>
-            </div>
+            <h4>Boleto Electrónico</h4>
+            ${data.logoBase64 ? `<img src="data:image/png;base64,${data.logoBase64}" class="brand-logo"
+                alt="Pullman Bus">` : ''}
+
+            <p class="disclaimer">Debe acreditar domicilio particular habitual y/o lugar de trabajo en la I o XV Región
+                del país, en control o aduana sanitaria, bajo su responsabilidad.
+            </p>
         </div>
 
-        <!-- VIAJE -->
-        <div class="trip">
-            <div class="route">
-                ${data.ciudad_origen} → ${data.ciudad_destino}
+        <div class="section-title">Datos del Servicio</div>
+
+        <div class="data-box">
+            <div class="row">
+                <div class="label">EMPRESA:</div>
+                <div class="value">${data.empresa?.nombre || ''}</div>
+            </div>
+            <div class="row">
+                <div class="label">RUT EMPRESA:</div>
+                <div class="value">${data.empresa?.rut || ''}</div>
+            </div>
+            <div class="row">
+                <div class="label">CONVENIO:</div>
+                <div class="value">${data.convenio?.nombre || ''}</div>
             </div>
 
-            <div class="grid">
-                <div>
-                    <div class="item-label">Fecha</div>
-                    <div class="item-value">${data.fecha_viaje}</div>
+            <div style="margin-top: 10px;"></div>
+
+            <div class="row" style="margin-top: 8px;">
+                <div class="label">PASAJERO:</div>
+                <div class="value">
+                    ${data.pasajero?.nombres}<br>
+                    ${data.pasajero?.apellidos || ''}
                 </div>
-                <div>
-                    <div class="item-label">Hora Salida</div>
-                    <div class="item-value">${data.hora_salida}</div>
-                </div>
-                <div>
-                    <div class="item-label">Terminal Origen</div>
-                    <div class="item-value">${data.terminal_origen}</div>
-                </div>
-                <div>
-                    <div class="item-label">Terminal Destino</div>
-                    <div class="item-value">${data.terminal_destino}</div>
-                </div>
+                <div class="value-bold">${data.pasajero?.rut || ''}</div>
             </div>
 
-            <div class="seat-price">
-                <div class="seat">Asiento: ${data.numero_asiento}</div>
-                <div class="price">$${data.monto_pagado}</div>
-            </div>
-        </div>
+            <div style="margin-top: 15px;"></div>
 
-        <div class="info">
-            <div class="trip">
-                <h3>Pasajero</h3>
-                <div class="passenger-name">
-                    ${data.pasajero?.nombres} ${data.pasajero?.apellidos}
-                </div>
-                <div>RUT: ${data.pasajero?.rut}</div>
+            <div class="row">
+                <div class="label">ORIGEN:</div>
+                <div class="value">${data.ciudad_origen || ''}</div>
+            </div>
+            <div class="row">
+                <div class="label">DESTINO:</div>
+                <div class="value">${data.ciudad_destino || ''}</div>
             </div>
 
-            <div class="trip">
-                <h3>Empresa</h3>
-                <div>${data.empresa?.nombre}</div>
-                <div>RUT: ${data.empresa?.rut}</div>
+            <div class="row" style="margin-top: 10px;">
+                <div class="label">FECHA VIAJE:</div>
+                <div class="value">${data.fecha_viaje || ''}</div>
             </div>
-        </div>
-
-        <!-- PAGO -->
-        <div class="payment">
-            <div class="payment-row">
-                <span>Tarifa Base</span>
-                <span>$${data.tarifa_base}</span>
+            <div class="row">
+                <div class="label">HORA VIAJE:</div>
+                <div class="value">${data.hora_salida || ''}</div>
             </div>
 
             <div class="payment-row">
-                <span>Descuento Aplicado (${data.porcentaje_descuento_aplicado}%)</span>
-                <span>-$${data.tarifa_base - data.monto_pagado}</span>
+                <div>
+                    <span class="label">ASIENTO:</span> <span class="value">${data.numero_asiento || ''}</span><br>
+                    <span class="label">N° BOLETO:</span> <span class="value">${data.numero_ticket || ''}</span>
+                </div>
+                <div class="total-box">
+                    VALOR PAGADO: <span class="total-amount">${data.monto_pagado || '0'}</span>
+                </div>
             </div>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <p style="font-size: 11px; color: #555;">Este boleto es válido únicamente para la fecha y hora indicadas.</p>
+            <span class="copy-label">Copia Cliente</span>
+        </div>
 
-            <div class="total">
-                <span>Total Pagado</span>
-                <span>$${data.monto_pagado}</span>
+        <div class="divider"></div>
+
+        <div class="barcode-section">
+            <div style="font-size: 10px; margin-bottom: 15px;">codigoSeguridad<br><strong>${data.pnr ||
+                    ''}</strong></div>
+
+            <div class="barcode-data">
+                <div>
+                    <div class="row">
+                        <div class="label" style="width: 80px;">FECHA:</div>
+                        <div class="value">${data.fecha_viaje || ''}</div>
+                    </div>
+                    <div class="row">
+                        <div class="label" style="width: 80px;">HORA VIAJE:</div>
+                        <div class="value">${data.hora_salida || ''}</div>
+                    </div>
+                    <div class="row" style="margin-top: 15px;">
+                        <div class="label" style="width: 80px; font-size: 14px;">A PAGAR :</div>
+                        <div class="value" style="font-size: 14px; font-weight: 800;">${data.monto_pagado || ''}</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="row">
+                        <div class="label" style="width: 80px;">T. ORIGEN:</div>
+                        <div class="value">${data.terminal_origen || ''}</div>
+                    </div>
+                    <div class="row">
+                        <div class="label" style="width: 80px;">T. DESTINO:</div>
+                        <div class="value">${data.terminal_destino || ''}</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="footer">
-            Código autorización: ${data.codigo_autorizacion} <br />
-            Documento generado electrónicamente
+        <div class="copy-label" style="margin-top: 10px; margin-bottom: 10px;">Copia Empresa</div>
+
+        <div class="footer-note">
+            BOLETO COMPRADO EN PORTAL DE CONVENIOS – NO ANULAR O DEVOLVER EN BOLETERÍAS.
         </div>
 
     </div>

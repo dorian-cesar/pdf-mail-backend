@@ -6,9 +6,6 @@ const sgMail = require("@sendgrid/mail");
 const html_to_pdf = require("html-pdf-node"); // Alternativa ligera a Puppeteer directo
 const fs = require("fs");
 
-// Inicializamos SendGrid
-sgMail.setApiKey(process.env.SENDGRID_API_KEY_BOLETOS);
-
 exports.sendTicketByEmail = async (req, res) => {
   const { emailDestino, templateName, type, ...data } = req.body;
 
@@ -28,6 +25,12 @@ exports.sendTicketByEmail = async (req, res) => {
     const selectedTemplate = require(templatePath);
 
     const emailConfig = resolveEmailConfig(type, data);
+
+    if (!emailConfig.apiKey) {
+      throw new Error(`No existe API key configurada para el tipo: ${type}`);
+    }
+
+    sgMail.setApiKey(emailConfig.apiKey);
 
     const logoPath = path.join(
       __dirname,
@@ -108,24 +111,26 @@ function resolveEmailConfig(type, data) {
   switch (type) {
     case "pullman":
       return {
+        apiKey: process.env.SENDGRID_API_KEY_CONVENIOS,
         logo: "logo-pullmanbus.png",
         from: process.env.EMAIL_FROM_CONVENIOS,
         html: pullmanTicket(data),
         filename: `pasaje_${data.numero_ticket || "ticket"}.pdf`,
       };
 
-      //tienen que insertar acá otro caso un ticket nuevo en un futuro
-      //ejemplo: 
-      // case "ejemplo":
-      // return {
-      //   logo: "logo-ejemplo.png",
-      //   from: process.env.EMAIL_FROM_EJEMPLO,
-      //   html: ejemploTicket(data),
-      //   filename: `pasaje_${data.reservaCodigo || "ejemplo"}.pdf`,
-      // };
+    //tienen que insertar acá otro caso un ticket nuevo en un futuro
+    //ejemplo: 
+    // case "ejemplo":
+    // return {
+    //   logo: "logo-ejemplo.png",
+    //   from: process.env.EMAIL_FROM_EJEMPLO,
+    //   html: ejemploTicket(data),
+    //   filename: `pasaje_${data.reservaCodigo || "ejemplo"}.pdf`,
+    // };
 
     default:
       return {
+        apiKey: process.env.SENDGRID_API_KEY_BOLETOS,
         logo: "logo-boletos.png",
         from: process.env.EMAIL_FROM_BOLETOS,
         html: boletosTicket(data),
@@ -196,59 +201,231 @@ function boletosTicket(data) {
 
 function pullmanTicket(data) {
   return `
-          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; width: 100%;">
-          
-          <div style="margin-bottom: 24px; margin-top: 12px;">
-            <img 
-              src="cid:logo" 
-              alt="boletos.la" 
-              style="max-width: 140px; height: auto;"
-              onerror="this.style.display='none'"
-            >
-          </div>
-          
-          <p style="font-size: 16px; line-height: 1.5; margin: 0 0 16px 0; color: #333;">
-            Hola ${data.pasajero.nombres || "Pasajero/a"} ${data.pasajero.apellidos || ""},
-          </p>
-          
-          <p style="font-size: 16px; line-height: 1.5; margin: 0 0 16px 0; color: #333;">
-            Tu compra se realizó con éxito. 🚌✨
-          </p>
-          
-          <p style="font-size: 16px; line-height: 1.5; margin: 0 0 16px 0; color: #333;">
-            Adjuntamos tu pasaje electrónico en formato PDF.
-          </p>
-          
-          <table style="width: 100%; margin-bottom: 24px;">
-            <tr>
-              <td style="background-color: #f5f7fa; padding: 16px; border-radius: 4px;">
-                <p style="font-size: 14px; line-height: 1.5; margin: 0 0 8px 0; color: #555;">
-                  <span style="font-weight: 600;">Número de Ticket:</span> 
-                  <span style="color: #ff6700; font-weight: 600;">${data.numero_ticket || "N/A"}</span>
-                </p>
-                <p style="font-size: 14px; line-height: 1.5; margin: 0; color: #555;">
-                  Puedes presentar el pasaje en tu dispositivo móvil o impreso.<br>
-                  No olvides llevar tu documento de identidad.
-                </p>
-              </td>
-            </tr>
-          </table>
-          
-          <p style="font-size: 15px; line-height: 1.5; margin: 0 0 8px 0; color: #333;">
-            Gracias por elegir <a style="color: #ff6700; font-weight: 600;" href="https://convenios.pullmanbus.cl/">Convenios</a>.
-          </p>
-          
-          <hr style="border: none; border-top: 1px solid #eaeef2; margin: 32px 0 24px 0;">
-          
-          <div style="font-size: 12px; color: #7b8a9b; line-height: 1.5;">
-            <p style="margin: 0 0 4px 0;">
-              © ${new Date().getFullYear()} pullmanbus.cl - Todos los derechos reservados
-            </p>
-            <p style="margin: 0; font-size: 11px;">
-              Este es un email automático, por favor no responder.
-            </p>
-          </div>
-          
-        </div>
-  `
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Confirmación de Pasaje - Pullman Bus</title>
+    <style>
+        @media only screen and (max-width:600px) {
+            .container {
+                width: 100% !important;
+                padding: 12px !important;
+            }
+
+            .stack-column {
+                display: block !important;
+                width: 100% !important;
+            }
+
+            .ticket-padding {
+                padding: 18px !important;
+            }
+
+            .badge {
+                display: inline-block !important;
+                padding: 10px 16px !important;
+            }
+
+            .two-col td {
+                display: block !important;
+                width: 100% !important;
+            }
+        }
+    </style>
+</head>
+
+<body style="margin:0; padding:0; background-color:#f5f5f5; font-family: Arial, Helvetica, sans-serif; color:#333;">
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+            <td align="center" style="padding:24px;">
+                <table class="container" width="600" cellpadding="0" cellspacing="0" role="presentation"
+                    style="width:600px; max-width:600px; background-color:#f5f5f5;">
+                    <tr>
+                        <td style="padding:20px;">
+
+                            <!-- Header -->
+                          <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                              <td align="center" style="padding:12px 0 24px;">
+                                <img 
+                                  src="cid:logo"
+                                  alt="Pullmanbus.cl"
+                                  width="140"
+                                  style="display:block; max-width:140px; height:auto;"
+                                  onerror="this.style.display='none'"
+                                >
+                              </td>
+                            </tr>
+                          </table>
+                            <!-- Success message -->
+                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                <tr>
+                                    <td align="center" style="padding:8px 0 18px;">
+                                        <h1 style="font-size:20px; margin:0 0 6px; font-weight:600; color:#333;">¡Todo
+                                            listo, ${data.pasajero?.nombres} ${data.pasajero?.apellidos || ''}!</h1>
+                                        <p style="margin:0; font-size:14px; color:#666;">Tu pasaje fue confirmado con
+                                            éxito.</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Ticket card -->
+                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                                style="background:#ffffff; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.08); overflow:hidden;">
+                                <tr>
+                                    <td class="ticket-padding" style="padding:26px;">
+                                        <!-- Ticket header -->
+                                        <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                            <tr>
+                                                <td style="text-align:center; padding-bottom:14px;">
+                                                    <div style="font-size:14px; font-weight:600; color:#333;">Detalle de
+                                                        tu compra</div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="text-align:center;">
+                                                    <span class="badge"
+                                                        style="display:inline-block; background:#0047ab; color:#fff; padding:10px 18px; border-radius:30px; font-weight:700; font-size:13px;">
+                                                        Nº DE BOLETO: ${data.numero_ticket}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <div style="height:18px; line-height:18px; font-size:1px;">&nbsp;</div>
+
+                                        <!-- Details -->
+                                        <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                                            class="two-col" style="width:100%;">
+                                            <tr>
+                                                <td valign="top" style="padding:6px 8px; width:50%;">
+                                                    <table width="100%" cellpadding="0" cellspacing="0"
+                                                        role="presentation">
+                                                        <tr>
+                                                            <td
+                                                                style="font-size:11px; color:#666; font-weight:700; text-transform:uppercase; padding-bottom:6px;">
+                                                                Origen</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:14px; color:#333; font-weight:600;">
+                                                                ${data.ciudad_origen}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td valign="top" style="padding:6px 8px; width:50%;">
+                                                    <table width="100%" cellpadding="0" cellspacing="0"
+                                                        role="presentation">
+                                                        <tr>
+                                                            <td
+                                                                style="font-size:11px; color:#666; font-weight:700; text-transform:uppercase; padding-bottom:6px;">
+                                                                Destino</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:14px; color:#333; font-weight:600;">
+                                                                ${data.ciudad_destino}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td valign="top" style="padding:16px 8px 6px; width:50%;">
+                                                    <table width="100%" cellpadding="0" cellspacing="0"
+                                                        role="presentation">
+                                                        <tr>
+                                                            <td
+                                                                style="font-size:11px; color:#666; font-weight:700; text-transform:uppercase; padding-bottom:6px;">
+                                                                Fecha de viaje</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:14px; color:#333; font-weight:600;">
+                                                                ${data.fecha_viaje}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td valign="top" style="padding:16px 8px 6px; width:50%;">
+                                                    <table width="100%" cellpadding="0" cellspacing="0"
+                                                        role="presentation">
+                                                        <tr>
+                                                            <td
+                                                                style="font-size:11px; color:#666; font-weight:700; text-transform:uppercase; padding-bottom:6px;">
+                                                                Hora salida</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:14px; color:#333; font-weight:600;">
+                                                                ${data.hora_salida}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td valign="top" style="padding:16px 8px 0; width:50%;">
+                                                    <table width="100%" cellpadding="0" cellspacing="0"
+                                                        role="presentation">
+                                                        <tr>
+                                                            <td
+                                                                style="font-size:11px; color:#666; font-weight:700; text-transform:uppercase; padding-bottom:6px;">
+                                                                Asiento</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:14px; color:#333; font-weight:600;">
+                                                                ${data.numero_asiento}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td valign="top" style="padding:16px 8px 0; width:50%;">
+                                                    <table width="100%" cellpadding="0" cellspacing="0"
+                                                        role="presentation">
+                                                        <tr>
+                                                            <td
+                                                                style="font-size:11px; color:#666; font-weight:700; text-transform:uppercase; padding-bottom:6px;">
+                                                                Pasajero</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:14px; color:#333; font-weight:600;">
+                                                                ${data.pasajero?.nombres} ${data.pasajero?.apellidos || ''}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Contact & footer -->
+                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                                style="margin-top:16px;">
+                                <tr>
+                                    <td align="center" style="padding:18px 8px 8px;">
+                                        <div style="font-size:14px; font-weight:700; color:#333; margin-bottom:10px;">
+                                            ¿Necesitas ayuda?</div>
+                                        <div style="font-size:13px; color:#333; margin-bottom:8px;">Tel: +56 2 3304 8632
+                                            • Email: clientes@pullmanbus.cl</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="padding:14px 8px 28px;">
+                                        <div style="font-size:11px; color:#666; line-height:1.6; text-align:center;">
+                                            <strong>pullmanbus.cl</strong> · Todos los derechos reservados.
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>
+  `;
 }
