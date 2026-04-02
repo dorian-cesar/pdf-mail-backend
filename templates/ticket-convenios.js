@@ -1,7 +1,7 @@
 const QRCode = require("qrcode");
 
 const modernCorporateTicket = async (data) => {
-  const qrUrl = `http://localhost:3000/mis-boletos?rut=${data.pasajero?.rut}&ticket=${data.numero_ticket}`;
+  const qrUrl = `https://convenios.pullmanbus.cl/mis-boletos?rut=${data.pasajero?.rut}&ticket=${data.numero_ticket}`;
 
   const qrBase64 = await QRCode.toDataURL(qrUrl);
 
