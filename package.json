@@ -4,6 +4,7 @@
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
     "html-pdf-node": "^1.0.8",
-    "pdf-lib": "^1.17.1"
+    "pdf-lib": "^1.17.1",
+    "qrcode": "^1.5.4"
   }
 }

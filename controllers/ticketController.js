@@ -20,24 +20,15 @@ exports.generateTicket = async (req, res) => {
     );
     const selectedTemplate = require(templatePath);
 
-    const allowedLogos = [
-      "logo-boletos.png",
-      "logo-pullmanbus.png",
-    ];
+    const allowedLogos = ["logo-boletos.png", "logo-pullmanbus.png"];
 
-    // Leer el logo y convertilo a base64 (igual que en mailController)
+    // Leer el logo y convertirlo a base64
     const fs = require("fs");
 
-    const logoFile = allowedLogos.includes(logo)
-      ? logo
-      : "logo-boletos.png";
+    const logoFile = allowedLogos.includes(logo) ? logo : "logo-boletos.png";
 
-    const logoPath = path.join(
-      __dirname,
-      "../public/images",
-      logoFile
-    );
-    
+    const logoPath = path.join(__dirname, "../public/images", logoFile);
+
     let logoBase64 = "";
     try {
       if (fs.existsSync(logoPath)) {
@@ -49,21 +40,24 @@ exports.generateTicket = async (req, res) => {
       console.error("Error al leer el logo:", err.message);
     }
 
-    const html = selectedTemplate({ ...data, logoBase64 });
+    // 🔥 AQUÍ ESTÁ LA MEJORA (soporta async o sync automáticamente)
+    const html = await Promise.resolve(
+      selectedTemplate({ ...data, logoBase64 }),
+    );
 
     // 2. Configuración de generación
     let options = {
       format: "A4",
       printBackground: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"], // Sigue siendo necesario en Linux
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     };
 
     let file = { content: html };
 
-    // 3. Generar PDF (Retorna una Promesa con el Buffer)
+    // 3. Generar PDF
     const pdfBuffer = await html_to_pdf.generatePdf(file, options);
 
-    // 4. Opcional: Metadatos con pdf-lib
+    // 4. Metadatos
     const pdfDoc = await PDFDocument.load(pdfBuffer);
     pdfDoc.setTitle(`Ticket - ${data.reservaCodigo || "Sin Titulo"}`);
     const finalPdfBytes = await pdfDoc.save();
@@ -73,9 +67,11 @@ exports.generateTicket = async (req, res) => {
     res.send(Buffer.from(finalPdfBytes));
   } catch (error) {
     console.error("Error con html-pdf-node:", error);
+
     if (error.code === "MODULE_NOT_FOUND") {
       return res.status(404).json({ error: "Template no encontrado" });
     }
+
     res.status(500).json({ error: "Error al generar el PDF" });
   }
 };

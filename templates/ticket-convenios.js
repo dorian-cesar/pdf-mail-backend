@@ -1,5 +1,11 @@
-const modernCorporateTicket = (data) => `
-<!DOCTYPE html>
+const QRCode = require("qrcode");
+
+const modernCorporateTicket = async (data) => {
+  const qrUrl = `http://localhost:3000/mis-boletos?rut=${data.pasajero?.rut}&ticket=${data.numero_ticket}`;
+
+  const qrBase64 = await QRCode.toDataURL(qrUrl);
+
+  return `<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -145,6 +151,15 @@ const modernCorporateTicket = (data) => `
             margin-top: 15px;
         }
 
+        .qr-box {
+            text-align: center;
+        }
+
+        .qr-box img {
+            width: 100px;
+            height: 100px;
+        }
+
         .footer-note {
             border: 1px solid #333;
             padding: 10px;
@@ -169,11 +184,9 @@ const modernCorporateTicket = (data) => `
     <div class="ticket-container">
         <div class="header">
             <h4>Boleto Electrónico</h4>
-            ${data.logoBase64 ? `<img src="data:image/png;base64,${data.logoBase64}" class="brand-logo"
-                alt="Pullman Bus">` : ''}
-
-            <p class="disclaimer">Debe acreditar domicilio particular habitual y/o lugar de trabajo en la I o XV Región
-                del país, en control o aduana sanitaria, bajo su responsabilidad.
+            ${data.logoBase64 ? `<img src="data:image/png;base64,${data.logoBase64}" class="brand-logo" alt="Pullman Bus">` : ""}
+            <p class="disclaimer">
+                Debe acreditar domicilio particular habitual y/o lugar de trabajo en la I o XV Región del país, en control o aduana sanitaria, bajo su responsabilidad.
             </p>
         </div>
 
@@ -182,15 +195,17 @@ const modernCorporateTicket = (data) => `
         <div class="data-box">
             <div class="row">
                 <div class="label">EMPRESA:</div>
-                <div class="value">${data.empresa?.nombre || ''}</div>
+                <div class="value">${data.empresa?.nombre || ""}</div>
             </div>
+
             <div class="row">
                 <div class="label">RUT EMPRESA:</div>
-                <div class="value">${data.empresa?.rut || ''}</div>
+                <div class="value">${data.empresa?.rut || ""}</div>
             </div>
+
             <div class="row">
                 <div class="label">CONVENIO:</div>
-                <div class="value">${data.convenio?.nombre || ''}</div>
+                <div class="value">${data.convenio?.nombre || ""}</div>
             </div>
 
             <div style="margin-top: 10px;"></div>
@@ -199,41 +214,44 @@ const modernCorporateTicket = (data) => `
                 <div class="label">PASAJERO:</div>
                 <div class="value">
                     ${data.pasajero?.nombres}<br>
-                    ${data.pasajero?.apellidos || ''}
+                    ${data.pasajero?.apellidos || ""}
                 </div>
-                <div class="value-bold">${data.pasajero?.rut || ''}</div>
+                <div class="value-bold">${data.pasajero?.rut || ""}</div>
             </div>
 
             <div style="margin-top: 15px;"></div>
 
             <div class="row">
                 <div class="label">ORIGEN:</div>
-                <div class="value">${data.ciudad_origen || ''}</div>
+                <div class="value">${data.ciudad_origen || ""}</div>
             </div>
+
             <div class="row">
                 <div class="label">DESTINO:</div>
-                <div class="value">${data.ciudad_destino || ''}</div>
+                <div class="value">${data.ciudad_destino || ""}</div>
             </div>
 
             <div class="row" style="margin-top: 10px;">
                 <div class="label">FECHA VIAJE:</div>
-                <div class="value">${data.fecha_viaje || ''}</div>
+                <div class="value">${data.fecha_viaje || ""}</div>
             </div>
+
             <div class="row">
                 <div class="label">HORA VIAJE:</div>
-                <div class="value">${data.hora_salida || ''}</div>
+                <div class="value">${data.hora_salida || ""}</div>
             </div>
 
             <div class="payment-row">
                 <div>
-                    <span class="label">ASIENTO:</span> <span class="value">${data.numero_asiento || ''}</span><br>
-                    <span class="label">N° BOLETO:</span> <span class="value">${data.numero_ticket || ''}</span>
+                    <span class="label">ASIENTO:</span> <span class="value">${data.numero_asiento || ""}</span><br>
+                    <span class="label">N° BOLETO:</span> <span class="value">${data.numero_ticket || ""}</span>
                 </div>
                 <div class="total-box">
-                    VALOR PAGADO: <span class="total-amount">${data.monto_pagado || '0'}</span>
+                    VALOR PAGADO: <span class="total-amount">${data.monto_pagado || "0"}</span>
                 </div>
             </div>
         </div>
+
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <p style="font-size: 11px; color: #555;">Este boleto es válido únicamente para la fecha y hora indicadas.</p>
             <span class="copy-label">Copia Cliente</span>
@@ -242,32 +260,38 @@ const modernCorporateTicket = (data) => `
         <div class="divider"></div>
 
         <div class="barcode-section">
-            <div style="font-size: 10px; margin-bottom: 15px;">codigoSeguridad<br><strong>${data.pnr ||
-                    ''}</strong></div>
+            <div style="font-size: 10px; margin-bottom: 15px;">codigoSeguridad<br><strong>${data.pnr || ""}</strong></div>
 
             <div class="barcode-data">
                 <div>
                     <div class="row">
                         <div class="label" style="width: 80px;">FECHA:</div>
-                        <div class="value">${data.fecha_viaje || ''}</div>
+                        <div class="value">${data.fecha_viaje || ""}</div>
                     </div>
                     <div class="row">
                         <div class="label" style="width: 80px;">HORA VIAJE:</div>
-                        <div class="value">${data.hora_salida || ''}</div>
+                        <div class="value">${data.hora_salida || ""}</div>
                     </div>
                     <div class="row" style="margin-top: 15px;">
                         <div class="label" style="width: 80px; font-size: 14px;">A PAGAR :</div>
-                        <div class="value" style="font-size: 14px; font-weight: 800;">${data.monto_pagado || ''}</div>
+                        <div class="value" style="font-size: 14px; font-weight: 800;">${data.monto_pagado || ""}</div>
                     </div>
                 </div>
-                <div>
-                    <div class="row">
-                        <div class="label" style="width: 80px;">T. ORIGEN:</div>
-                        <div class="value">${data.terminal_origen || ''}</div>
+
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div style="flex: 1;">
+                        <div class="row">
+                            <div class="label" style="width: 80px;">T. ORIGEN:</div>
+                            <div class="value">${data.terminal_origen || ""}</div>
+                        </div>
+                        <div class="row">
+                            <div class="label" style="width: 80px;">T. DESTINO:</div>
+                            <div class="value">${data.terminal_destino || ""}</div>
+                        </div>
                     </div>
-                    <div class="row">
-                        <div class="label" style="width: 80px;">T. DESTINO:</div>
-                        <div class="value">${data.terminal_destino || ''}</div>
+                    <div class="qr-box">
+                        <img src="${qrBase64}" alt="QR Code" />
+                        <div style="font-size: 9px; margin-top: 5px;">Escanear boleto</div>
                     </div>
                 </div>
             </div>
@@ -278,11 +302,10 @@ const modernCorporateTicket = (data) => `
         <div class="footer-note">
             BOLETO COMPRADO EN PORTAL DE CONVENIOS – NO ANULAR O DEVOLVER EN BOLETERÍAS.
         </div>
-
     </div>
 </body>
 
-</html>
-`;
+</html>`;
+};
 
 module.exports = modernCorporateTicket;
