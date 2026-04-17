@@ -167,6 +167,10 @@ const modernTicket = (data) => `
         border-bottom: 1px solid #f8fafc;
       }
 
+      .detail-row.empty {
+        visibility: hidden;
+      }
+
       .detail-row:last-child {
         margin-bottom: 0;
         padding-bottom: 0;
@@ -359,7 +363,6 @@ const modernTicket = (data) => `
         <div class="route-point">
           <div class="location-label">Origen</div>
           <div class="location-name">${data.origen}</div>
-          <div class="terminal-name">${data.terminal}</div>
           <div class="date-hour">
             <div>${data.fechaViaje}</div>
             <div>${data.horaSalida} hrs</div>
@@ -388,15 +391,15 @@ const modernTicket = (data) => `
             <div class="detail-label">Duración</div>
             <div class="detail-value">${data.duracion}</div>
           </div>
-          <div class="detail-row">
+          <div class="detail-row empty">
             <div class="detail-label">Servicio</div>
             <div class="detail-value">${data.servicioTipo}</div>
           </div>
           <div class="detail-row">
-            <div class="detail-label">Asiento(s)</div>
+            <div class="detail-label">Asiento</div>
             <div class="detail-value">${data.asientos}</div>
           </div>
-          <div class="detail-row">
+          <div class="detail-row empty">
             <div class="detail-label">Puerta de embarque</div>
             <div class="detail-value">${data.puerta}</div>
           </div>
