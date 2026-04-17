@@ -375,7 +375,6 @@ const modernTicket = (data) => `
         <div class="route-point">
           <div class="location-label">Destino</div>
           <div class="location-name">${data.destino}</div>
-          <div class="terminal-name">${data.terminal}</div>
           <div class="date-hour">
             <div>${data.fechaViaje}</div>
             <div>${data.horaLlegada} hrs</div>
