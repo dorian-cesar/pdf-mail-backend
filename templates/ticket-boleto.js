@@ -167,8 +167,9 @@ const modernTicket = (data) => `
         border-bottom: 1px solid #f8fafc;
       }
 
-      .detail-row.empty {
-        visibility: hidden;
+      .detail-row.empty .detail-label,
+      .detail-row.empty .detail-value {
+        color: transparent;
       }
 
       .detail-row:last-child {
