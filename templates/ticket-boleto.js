@@ -391,13 +391,13 @@ const modernTicket = (data) => `
             <div class="detail-label">Duración</div>
             <div class="detail-value">${data.duracion}</div>
           </div>
-          <div class="detail-row empty">
-            <div class="detail-label">Servicio</div>
-            <div class="detail-value">${data.servicioTipo}</div>
-          </div>
           <div class="detail-row">
             <div class="detail-label">Asiento</div>
             <div class="detail-value">${data.asientos}</div>
+          </div>
+          <div class="detail-row empty">
+            <div class="detail-label">Servicio</div>
+            <div class="detail-value">${data.servicioTipo}</div>
           </div>
           <div class="detail-row empty">
             <div class="detail-label">Puerta de embarque</div>
