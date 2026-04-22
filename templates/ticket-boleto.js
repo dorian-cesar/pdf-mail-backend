@@ -98,6 +98,32 @@ body {
   margin-bottom:8px;
 }
 
+.ticket-code {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 2px dashed #0ea5e9;
+  border-radius: 8px;
+  padding: 18px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.ticket-code-label {
+  font-size: 10px;
+  color: #0369a1;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.ticket-code-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: #ff6700;
+  letter-spacing: 2px;
+  font-family: 'Courier New', monospace;
+}
+
 .payment-section {
   border:2px solid #e2e8f0;
   border-radius:8px;
@@ -197,6 +223,12 @@ body {
   <div class="detail-row"><span>Fecha Nac.:</span><span>${data.fechaNacimiento}</span></div>
 </div>
 
+</div>
+
+<!-- TICKET NUMBER -->
+<div class="ticket-code">
+  <div class="ticket-code-label">Número de Boleto</div>
+  <div class="ticket-code-value">${data.reservaCodigo}</div>
 </div>
 
 <!-- PAGO -->

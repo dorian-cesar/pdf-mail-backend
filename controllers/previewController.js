@@ -43,6 +43,7 @@ exports.previewTicket = async (req, res) => {
       horaLlegada: "13:30",
       duracion: "05:30 hs",
       asiento: "12",
+      reservaCodigo: "70030020000053",
       servicio: "Semicama",
       email: "ejemplo@gmail.com",
       fechaNacimiento: "05/08/1985",
