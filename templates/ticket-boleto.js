@@ -72,6 +72,12 @@ body {
   background:#94a3b8;
 }
 
+.date-hour {
+  font-size:12px;
+  font-weight:800;
+  text-transform:uppercase;
+}
+
 .details-container {
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -179,17 +185,17 @@ body {
 <div class="details-container">
 
 <div class="details-card">
-  <div class="detail-row"><span>Duración</span><span>${data.duracion}</span></div>
-  <div class="detail-row"><span>Asiento</span><span>${data.asiento}</span></div>
-  <div class="detail-row"><span>Servicio</span><span>${data.servicio}</span></div>
-  <div class="detail-row"><span>Catering</span><span>Menú a bordo</span></div>
+  <div class="detail-row"><span>Duración:</span><span>${data.duracion}</span></div>
+  <div class="detail-row"><span>Asiento:</span><span>${data.asiento}</span></div>
+  <div class="detail-row"><span>Servicio:</span><span>${data.servicio}</span></div>
+  <div class="detail-row"><span>Catering:</span><span>Menú a bordo</span></div>
 </div>
 
 <div class="details-card">
-  <div class="detail-row"><span>Nombre</span><span>${data.pasajeroNombre}</span></div>
-  <div class="detail-row"><span>Documento</span><span>${data.documento}</span></div>
-  <div class="detail-row"><span>Email</span><span>${data.email}</span></div>
-  <div class="detail-row"><span>Fecha Nac.</span><span>${data.fechaNacimiento}</span></div>
+  <div class="detail-row"><span>Nombre:</span><span>${data.pasajeroNombre}</span></div>
+  <div class="detail-row"><span>Documento:</span><span>${data.documento}</span></div>
+  <div class="detail-row"><span>Email:</span><span>${data.email}</span></div>
+  <div class="detail-row"><span>Fecha Nac.:</span><span>${data.fechaNacimiento}</span></div>
 </div>
 
 </div>
