@@ -32,7 +32,7 @@ body {
   padding:20px 30px;
   border-radius:12px;
   text-align:center;
-  margin-bottom:20px;
+  margin-bottom:10px;
 }
 
 .company-logo {
@@ -51,8 +51,8 @@ body {
   border:2px solid #e2e8f0;
   border-radius:10px;
   padding:25px;
-  margin-top: 20px;
-  margin-bottom:20px;
+  margin-top: 10px;
+  margin-bottom:10px;
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -83,7 +83,7 @@ body {
   display:grid;
   grid-template-columns:repeat(2,1fr);
   gap:15px;
-  margin-bottom:20px;
+  margin-bottom:10px;
 }
 
 .details-card {
@@ -102,9 +102,9 @@ body {
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   border: 2px dashed #0ea5e9;
   border-radius: 8px;
-  padding: 18px;
+  padding: 10px;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .ticket-code-label {
@@ -128,7 +128,7 @@ body {
   border:2px solid #e2e8f0;
   border-radius:8px;
   padding:20px;
-  margin-bottom:20px;
+  margin-bottom:10px;
 }
 
 .total-row {
@@ -157,7 +157,7 @@ body {
   justify-content:space-between;
   align-items:center;
   margin-top:auto;
-  padding-top:15px;
+  padding-top:10px;
   border-top:1px solid #e2e8f0;
   font-size:9px;
 }
