@@ -15,5 +15,8 @@ app.use("/api/tickets", ticketRoutes);
 app.use("/api/mail", mailRoutes);
 app.use("/api/pdf-mail", pdfMailRoutes);
 
+const previewController = require("./controllers/previewController");
+app.get("/preview-ticket", previewController.previewTicket);
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));

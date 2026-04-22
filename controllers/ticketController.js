@@ -26,23 +26,26 @@ exports.generateTicket = async (req, res) => {
     const fs = require("fs");
 
     const logoFile = allowedLogos.includes(logo) ? logo : "logo-boletos.png";
-
     const logoPath = path.join(__dirname, "../public/images", logoFile);
+    const partnerLogoPath = path.join(__dirname, "../public/images/logo-boletos.png");
 
     let logoBase64 = "";
+    let logoPartnerBase64 = "";
+
     try {
       if (fs.existsSync(logoPath)) {
         logoBase64 = fs.readFileSync(logoPath).toString("base64");
-      } else {
-        console.warn("Logo no encontrado en:", logoPath);
+      }
+      if (fs.existsSync(partnerLogoPath)) {
+        logoPartnerBase64 = fs.readFileSync(partnerLogoPath).toString("base64");
       }
     } catch (err) {
-      console.error("Error al leer el logo:", err.message);
+      console.error("Error al leer los logos:", err.message);
     }
 
     // 🔥 AQUÍ ESTÁ LA MEJORA (soporta async o sync automáticamente)
     const html = await Promise.resolve(
-      selectedTemplate({ ...data, logoBase64 }),
+      selectedTemplate({ ...data, logoBase64, logoPartnerBase64 }),
     );
 
     // 2. Configuración de generación
