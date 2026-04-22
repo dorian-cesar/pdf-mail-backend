@@ -32,16 +32,31 @@ exports.sendTicketByEmail = async (req, res) => {
 
     sgMail.setApiKey(emailConfig.apiKey);
 
-    const logoPath = path.join(__dirname, "../public/images", emailConfig.logo);
+    // Determinar qué logo usar para el header (el enviado en el body o el del config)
+    const logoFile = req.body.logo || emailConfig.logo;
+    const logoPath = path.join(__dirname, "../public/images", logoFile);
+    const partnerLogoPath = path.join(
+      __dirname,
+      "../public/images/logo-boletos.png",
+    );
 
     let logoBase64 = "";
-    if (fs.existsSync(logoPath)) {
-      logoBase64 = fs.readFileSync(logoPath).toString("base64");
+    let logoPartnerBase64 = "";
+
+    try {
+      if (fs.existsSync(logoPath)) {
+        logoBase64 = fs.readFileSync(logoPath).toString("base64");
+      }
+      if (fs.existsSync(partnerLogoPath)) {
+        logoPartnerBase64 = fs.readFileSync(partnerLogoPath).toString("base64");
+      }
+    } catch (err) {
+      console.error("Error al leer los logos:", err.message);
     }
 
-    // 🔥 SOPORTE SYNC + ASYNC (LA ÚNICA LÍNEA IMPORTANTE)
+    // 🔥 SOPORTE SYNC + ASYNC
     const html = await Promise.resolve(
-      selectedTemplate({ ...data, logoBase64 }),
+      selectedTemplate({ ...data, logoBase64, logoPartnerBase64 }),
     );
 
     // 2. Configuración para la generación del PDF
