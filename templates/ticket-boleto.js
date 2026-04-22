@@ -161,7 +161,6 @@ body {
   <div class="route-point">
     <div class="location-label">Origen</div>
     <div class="location-name">${data.origen}</div>
-    <div class="terminal-name">${data.terminalOrigen || ""}</div>
     <div class="date-hour">
       <div>${data.fechaViaje}</div>
       <div>${data.horaSalida} hrs</div>
@@ -173,7 +172,6 @@ body {
   <div class="route-point">
     <div class="location-label">Destino</div>
     <div class="location-name">${data.destino}</div>
-    <div class="terminal-name">${data.terminalDestino || ""}</div>
     <div class="date-hour">
       <div>${data.fechaViaje}</div>
       <div>${data.horaLlegada} hrs</div>
