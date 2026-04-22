@@ -76,6 +76,7 @@ body {
   font-size:12px;
   font-weight:800;
   text-transform:uppercase;
+  margin-top:5px;
 }
 
 .details-container {
