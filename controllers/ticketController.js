@@ -20,7 +20,11 @@ exports.generateTicket = async (req, res) => {
     );
     const selectedTemplate = require(templatePath);
 
-    const allowedLogos = ["logo-boletos.png", "logo-pullmanbus.png"];
+    const allowedLogos = [
+      "logo-boletos.png",
+      "logo-pullmanbus.png",
+      "logo-santaniana-blanco.png",
+    ];
 
     // Leer el logo y convertirlo a base64
     const fs = require("fs");
