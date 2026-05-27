@@ -121,6 +121,74 @@ exports.sendTicketByEmail = async (req, res) => {
   }
 };
 
+// Controlador para procesar y enviar por correo las solicitudes del formulario de Reservas Corporativas
+exports.sendCorporateEmail = async (req, res) => {
+  const { nombre, empresa, rut, cargo, email, telefono, empleados, mensaje } =
+    req.body;
+
+  if (!nombre || !empresa || !email || !telefono || !empleados) {
+    return res.status(400).json({
+      error:
+        "Faltan campos obligatorios: nombre, empresa, email, telefono o empleados",
+    });
+  }
+
+  try {
+    const corporateTemplate = require("../templates/corporateTemplate");
+
+    // Generar el HTML del correo usando la plantilla corporativa
+    const html = corporateTemplate({
+      nombre,
+      empresa,
+      rut,
+      cargo,
+      email,
+      telefono,
+      empleados,
+      mensaje,
+    });
+
+    const emailFrom =
+      process.env.EMAIL_FROM_CONVENIOS || "viajes@pullmanbus.cl";
+
+    // Usar exclusivamente SENDGRID_API_KEY_CONVENIOS
+    let apiKey = (process.env.SENDGRID_API_KEY_CONVENIOS || "")
+      .replace(/>+$/, "")
+      .trim();
+
+    if (!apiKey) {
+      throw new Error(
+        "No hay API Key configurada para el envío de correos corporativos",
+      );
+    }
+
+    sgMail.setApiKey(apiKey);
+
+    const msg = {
+      to: "dwigodski@wit.la", // Destinatario del formulario de Reservas Corporativas
+      from: emailFrom,
+      subject: `Nueva Solicitud de Convenio - ${empresa}`,
+      text: `Nueva solicitud de convenio de ${nombre} de la empresa ${empresa}. Teléfono: ${telefono}, Email: ${email}`,
+      html: html,
+      replyTo: email,
+    };
+
+    await sgMail.send(msg);
+
+    res.status(200).json({
+      success: true,
+      message:
+        "Formulario de Reservas Corporativas procesado y enviado con éxito",
+    });
+  } catch (error) {
+    console.error("Error en sendCorporateEmail:", error.message);
+    res.status(500).json({
+      error: "Error al enviar el correo del formulario corporativo",
+      details: error.response?.body || error.message,
+    });
+  }
+};
+
 function resolveEmailConfig(type, data) {
   switch (type) {
     case "pullman":
