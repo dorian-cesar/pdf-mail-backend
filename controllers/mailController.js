@@ -165,10 +165,10 @@ exports.sendCorporateEmail = async (req, res) => {
     sgMail.setApiKey(apiKey);
 
     const msg = {
-      to: "dwigodski@wit.la", // Destinatario del formulario de Reservas Corporativas
+      to: "soportecuentascorrientes@pullmanbus.cl", // Destinatario del formulario de Reservas Corporativas
       from: emailFrom,
-      subject: `Nueva Solicitud de Convenio - ${empresa}`,
-      text: `Nueva solicitud de convenio de ${nombre} de la empresa ${empresa}. Teléfono: ${telefono}, Email: ${email}`,
+      subject: `Nueva Solicitud de Reservas Corporativas - ${empresa}`,
+      text: `Nueva solicitud corporativa de ${nombre} de la empresa ${empresa}. Teléfono: ${telefono}, Email: ${email}`,
       html: html,
       replyTo: email,
     };

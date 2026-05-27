@@ -7,7 +7,7 @@ const corporateTemplate = (data) => `
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nueva Solicitud de Convenio Corporativo</title>
+  <title>Nueva Solicitud de Reservas Corporativas</title>
   <style>
     body {
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -129,7 +129,7 @@ const corporateTemplate = (data) => `
       <!-- Header -->
       <div class="header">
         <h1>Reservas Corporativas</h1>
-        <p>Nueva solicitud de contacto para Cuenta Corriente Corporativa</p>
+        <p>Nueva solicitud de contacto para Reservas Corporativas</p>
       </div>
       
       <!-- Content -->
@@ -138,40 +138,44 @@ const corporateTemplate = (data) => `
         <table class="grid-table">
           <tr>
             <td class="label">Nombre</td>
-            <td class="value">${data.nombre || 'No proporcionado'}</td>
+            <td class="value">${data.nombre || "No proporcionado"}</td>
           </tr>
           <tr>
             <td class="label">Empresa</td>
-            <td class="value"><strong>${data.empresa || 'No proporcionado'}</strong></td>
+            <td class="value"><strong>${data.empresa || "No proporcionado"}</strong></td>
           </tr>
           <tr>
             <td class="label">RUT Empresa</td>
-            <td class="value">${data.rut || 'No proporcionado'}</td>
+            <td class="value">${data.rut || "No proporcionado"}</td>
           </tr>
           <tr>
             <td class="label">Cargo</td>
-            <td class="value">${data.cargo || 'No proporcionado'}</td>
+            <td class="value">${data.cargo || "No proporcionado"}</td>
           </tr>
           <tr>
             <td class="label">Email Corporativo</td>
-            <td class="value"><a href="mailto:${data.email}" style="color: #1d4ed8; text-decoration: none; font-weight: 600;">${data.email || 'No proporcionado'}</a></td>
+            <td class="value"><a href="mailto:${data.email}" style="color: #1d4ed8; text-decoration: none; font-weight: 600;">${data.email || "No proporcionado"}</a></td>
           </tr>
           <tr>
             <td class="label">Teléfono</td>
-            <td class="value"><a href="tel:${data.telefono}" style="color: #1d4ed8; text-decoration: none;">${data.telefono || 'No proporcionado'}</a></td>
+            <td class="value"><a href="tel:${data.telefono}" style="color: #1d4ed8; text-decoration: none;">${data.telefono || "No proporcionado"}</a></td>
           </tr>
           <tr>
             <td class="label">Nº Empleados</td>
-            <td class="value">${data.empleados || 'No proporcionado'}</td>
+            <td class="value">${data.empleados || "No proporcionado"}</td>
           </tr>
         </table>
 
-        ${data.mensaje ? `
+        ${
+          data.mensaje
+            ? `
         <div class="section-title">Mensaje / Requerimientos</div>
         <div class="message-box">
           <p>"${data.mensaje}"</p>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
       </div>
       
       <!-- Footer -->
