@@ -164,6 +164,17 @@ exports.sendCorporateEmail = async (req, res) => {
 
     sgMail.setApiKey(apiKey);
 
+    // Leer el logo de Pullman Bus para incrustarlo como adjunto en línea (CID)
+    const logoPath = path.join(__dirname, "../public/images/logo-pullmanbus.png");
+    let logoBase64 = "";
+    try {
+      if (fs.existsSync(logoPath)) {
+        logoBase64 = fs.readFileSync(logoPath).toString("base64");
+      }
+    } catch (err) {
+      console.error("Error al leer el logo para correo corporativo:", err.message);
+    }
+
     const msg = {
       to: "dwigodski@wit.la", // Destinatario del formulario de Reservas Corporativas
       from: emailFrom,
@@ -172,6 +183,18 @@ exports.sendCorporateEmail = async (req, res) => {
       html: html,
       replyTo: email,
     };
+
+    if (logoBase64) {
+      msg.attachments = [
+        {
+          content: logoBase64,
+          filename: "logo-pullmanbus.png",
+          type: "image/png",
+          disposition: "inline",
+          content_id: "logo",
+        },
+      ];
+    }
 
     await sgMail.send(msg);
 
