@@ -1,3 +1,17 @@
+const fs = require("fs");
+const path = require("path");
+
+let logoDataUri = "";
+try {
+  const logoPath = path.join(__dirname, "../public/images/logo-pullmanbus.png");
+  if (fs.existsSync(logoPath)) {
+    const logoBase64 = fs.readFileSync(logoPath).toString("base64");
+    logoDataUri = `data:image/png;base64,${logoBase64}`;
+  }
+} catch (error) {
+  console.error("Error al cargar el logo en corporateTemplate:", error.message);
+}
+
 /**
  * Template para el correo del formulario de Reservas Corporativas
  */
@@ -32,7 +46,7 @@ const corporateTemplate = (data) => `
       border: 1px solid #eef2f5;
     }
     .header {
-      background: linear-gradient(135deg, #0f2c59 0%, #1d4ed8 100%);
+      background-color: #0f2c59;
       padding: 35px 40px;
       color: #ffffff;
       text-align: center;
@@ -86,7 +100,7 @@ const corporateTemplate = (data) => `
     }
     .message-box {
       background-color: #f8fafc;
-      border-left: 4px solid #1d4ed8;
+      border-left: 4px solid #0f2c59;
       border-radius: 0 12px 12px 0;
       padding: 20px;
       margin-top: 10px;
@@ -128,6 +142,14 @@ const corporateTemplate = (data) => `
     <div class="container">
       <!-- Header -->
       <div class="header">
+        <div style="margin-bottom: 15px;">
+          <img 
+            src="${logoDataUri}" 
+            alt="Pullman Bus" 
+            style="max-width: 150px; height: auto; display: inline-block;"
+            onerror="this.style.display='none'"
+          />
+        </div>
         <h1>Reservas Corporativas</h1>
         <p>Nueva solicitud de contacto para Reservas Corporativas</p>
       </div>
@@ -154,11 +176,11 @@ const corporateTemplate = (data) => `
           </tr>
           <tr>
             <td class="label">Email Corporativo</td>
-            <td class="value"><a href="mailto:${data.email}" style="color: #1d4ed8; text-decoration: none; font-weight: 600;">${data.email || "No proporcionado"}</a></td>
+            <td class="value"><a href="mailto:${data.email}" style="color: #0f2c59; text-decoration: none; font-weight: 600;">${data.email || "No proporcionado"}</a></td>
           </tr>
           <tr>
             <td class="label">Teléfono</td>
-            <td class="value"><a href="tel:${data.telefono}" style="color: #1d4ed8; text-decoration: none;">${data.telefono || "No proporcionado"}</a></td>
+            <td class="value"><a href="tel:${data.telefono}" style="color: #0f2c59; text-decoration: none;">${data.telefono || "No proporcionado"}</a></td>
           </tr>
           <tr>
             <td class="label">Nº Empleados</td>
