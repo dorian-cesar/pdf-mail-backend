@@ -165,18 +165,29 @@ exports.sendCorporateEmail = async (req, res) => {
     sgMail.setApiKey(apiKey);
 
     // Leer el logo de Pullman Bus para incrustarlo como adjunto en línea (CID)
-    const logoPath = path.join(__dirname, "../public/images/logo-pullmanbus.png");
+    const logoPath = path.join(
+      __dirname,
+      "../public/images/logo-pullmanbus.png",
+    );
     let logoBase64 = "";
     try {
       if (fs.existsSync(logoPath)) {
         logoBase64 = fs.readFileSync(logoPath).toString("base64");
       }
     } catch (err) {
-      console.error("Error al leer el logo para correo corporativo:", err.message);
+      console.error(
+        "Error al leer el logo para correo corporativo:",
+        err.message,
+      );
     }
 
     const msg = {
-      to: "soportecuentascorrientes@pullmanbus.cl", // Destinatario del formulario de Reservas Corporativas
+      to: [
+        "soportecuentascorrientes@pullmanbus.cl",
+        "mromero@pullmanbus.cl",
+        "cpoblete@pullmanbus.cl",
+        "pmellado@pullman.cl",
+      ], // Destinatarios del formulario de Reservas Corporativas
       from: emailFrom,
       subject: `Nueva Solicitud de Reservas Corporativas - ${empresa}`,
       text: `Nueva solicitud corporativa de ${nombre} de la empresa ${empresa}. Teléfono: ${telefono}, Email: ${email}`,
