@@ -176,7 +176,7 @@ exports.sendCorporateEmail = async (req, res) => {
     }
 
     const msg = {
-      to: "dwigodski@wit.la", // Destinatario del formulario de Reservas Corporativas
+      to: "soportecuentascorrientes@pullmanbus.cl", // Destinatario del formulario de Reservas Corporativas
       from: emailFrom,
       subject: `Nueva Solicitud de Reservas Corporativas - ${empresa}`,
       text: `Nueva solicitud corporativa de ${nombre} de la empresa ${empresa}. Teléfono: ${telefono}, Email: ${email}`,
