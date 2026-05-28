@@ -182,12 +182,13 @@ exports.sendCorporateEmail = async (req, res) => {
     }
 
     const msg = {
-      to: [
-        "soportecuentascorrientes@pullmanbus.cl",
-        "mromero@pullmanbus.cl",
-        "cpoblete@pullmanbus.cl",
-        "pmellado@pullman.cl",
-      ], // Destinatarios del formulario de Reservas Corporativas
+      to: "dwigodski@wit.la",
+      // to: [
+      //   "soportecuentascorrientes@pullmanbus.cl",
+      //   "mromero@pullmanbus.cl",
+      //   "cpoblete@pullmanbus.cl",
+      //   "pmellado@pullman.cl",
+      // ],
       from: emailFrom,
       subject: `Nueva Solicitud de Reservas Corporativas - ${empresa}`,
       text: `Nueva solicitud corporativa de ${nombre} de la empresa ${empresa}. Teléfono: ${telefono}, Email: ${email}`,
