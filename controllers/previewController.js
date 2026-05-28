@@ -61,3 +61,26 @@ exports.previewTicket = async (req, res) => {
     res.status(500).send("Error al generar la vista previa");
   }
 };
+
+exports.previewCorporate = async (req, res) => {
+  try {
+    const corporateTemplate = require("../templates/corporateTemplate");
+
+    const mockData = {
+      nombre: "Diego Wigosdki",
+      empresa: "WIT S.A.",
+      rut: "76.123.456-7",
+      cargo: "Gerente de Innovación",
+      email: "dwigodski@wit.la",
+      telefono: "+56 9 8765 4321",
+      empleados: "50 - 100",
+      mensaje: "Hola, nos gustaría solicitar una cotización especial para viajes frecuentes de nuestro personal corporativo entre Santiago y Viña del Mar.",
+    };
+
+    const html = corporateTemplate(mockData);
+    res.send(html);
+  } catch (error) {
+    console.error("Error en previewCorporate:", error);
+    res.status(500).send("Error al generar la vista previa corporativa");
+  }
+};

@@ -37,7 +37,7 @@ const corporateTemplate = (data) => `
       padding: 40px 0;
     }
     .container {
-      max-width: 600px;
+      max-width: 800px;
       margin: 0 auto;
       background-color: #ffffff;
       border-radius: 16px;
@@ -46,21 +46,23 @@ const corporateTemplate = (data) => `
       border: 1px solid #eef2f5;
     }
     .header {
-      background-color: #0f2c59;
-      padding: 35px 40px;
+      background-color: #0739b3;
+      border-top: 6px solid #fa5e00;
+      padding: 40px 40px;
       color: #ffffff;
       text-align: center;
     }
     .header h1 {
       margin: 0;
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 700;
       letter-spacing: -0.5px;
+      color: rgba(255, 255, 255, 0.9);
     }
     .header p {
       margin: 8px 0 0 0;
       font-size: 15px;
-      color: rgba(255, 255, 255, 0.85);
+      color: rgba(255, 255, 255, 0.9);
     }
     .content {
       padding: 40px;
@@ -68,7 +70,7 @@ const corporateTemplate = (data) => `
     .section-title {
       font-size: 16px;
       font-weight: 700;
-      color: #0f2c59;
+      color: #0739b3;
       text-transform: uppercase;
       letter-spacing: 0.8px;
       margin-bottom: 20px;
@@ -100,7 +102,7 @@ const corporateTemplate = (data) => `
     }
     .message-box {
       background-color: #f8fafc;
-      border-left: 4px solid #0f2c59;
+      border-left: 4px solid #fa5e00;
       border-radius: 0 12px 12px 0;
       padding: 20px;
       margin-top: 10px;
@@ -144,10 +146,10 @@ const corporateTemplate = (data) => `
       <div class="header">
         <div style="margin-bottom: 15px;">
           <img 
-            src="${logoDataUri}" 
+            src="cid:logo" 
             alt="Pullman Bus" 
-            style="max-width: 150px; height: auto; display: inline-block;"
-            onerror="this.style.display='none'"
+            style="max-width: 220px; height: auto; display: inline-block;"
+            onerror="this.src='${logoDataUri}'; this.onerror=null;"
           />
         </div>
         <h1>Reservas Corporativas</h1>
@@ -176,11 +178,11 @@ const corporateTemplate = (data) => `
           </tr>
           <tr>
             <td class="label">Email Corporativo</td>
-            <td class="value"><a href="mailto:${data.email}" style="color: #0f2c59; text-decoration: none; font-weight: 600;">${data.email || "No proporcionado"}</a></td>
+            <td class="value"><a href="mailto:${data.email}" style="color: #0739b3; text-decoration: none; font-weight: 600;">${data.email || "No proporcionado"}</a></td>
           </tr>
           <tr>
             <td class="label">Teléfono</td>
-            <td class="value"><a href="tel:${data.telefono}" style="color: #0f2c59; text-decoration: none;">${data.telefono || "No proporcionado"}</a></td>
+            <td class="value"><a href="tel:${data.telefono}" style="color: #0739b3; text-decoration: none;">${data.telefono || "No proporcionado"}</a></td>
           </tr>
           <tr>
             <td class="label">Nº Empleados</td>
@@ -202,7 +204,7 @@ const corporateTemplate = (data) => `
       
       <!-- Footer -->
       <div class="footer">
-        <p><strong>Pullman Bus Corporativo</strong></p>
+        <p><strong>Pullman Bus</strong></p>
         <p>Este correo fue generado automáticamente por el formulario de Reservas Corporativas.</p>
         <p>© ${new Date().getFullYear()} Pullman Bus. Todos los derechos reservados.</p>
       </div>
