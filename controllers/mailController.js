@@ -184,9 +184,9 @@ exports.sendCorporateEmail = async (req, res) => {
     const msg = {
       to: [
         "soportecuentascorrientes@pullmanbus.cl",
-        "mromero@pullmanbus.cl",
-        "cpoblete@pullmanbus.cl",
-        "pmellado@pullman.cl",
+        "llara@wit.la",
+        "epaz@wit.la",
+        "rlorca@wit.la",
       ],
       from: emailFrom,
       subject: `Nueva Solicitud de Reservas Corporativas - ${empresa}`,
