@@ -84,3 +84,53 @@ exports.previewCorporate = async (req, res) => {
     res.status(500).send("Error al generar la vista previa corporativa");
   }
 };
+
+exports.previewConvenios = async (req, res) => {
+  try {
+    const ticketTemplate = require("../templates/ticket-convenios");
+
+    const logoPath = path.join(
+      __dirname,
+      "../public/images/logo-pullmanbus.png",
+    );
+
+    let logoBase64 = "";
+
+    if (fs.existsSync(logoPath)) {
+      logoBase64 = fs.readFileSync(logoPath).toString("base64");
+    }
+
+    const mockData = {
+      logoBase64: logoBase64,
+      numero_ticket: "87654321",
+      pnr: "PLM9876",
+      monto_pagado: "$14.500",
+      ciudad_origen: "SANTIAGO",
+      ciudad_destino: "VIÑA DEL MAR",
+      fecha_viaje: "25/04/2026",
+      hora_salida: "18:30",
+      numero_asiento: "24",
+      terminal_origen: "TERMINAL ALAMEDA",
+      terminal_destino: "TERMINAL VIÑA DEL MAR",
+      empresa: {
+        nombre: "PULLMAN BUS COSTA CENTRAL",
+        rut: "76.123.456-7"
+      },
+      convenio: {
+        nombre: "CONVENIO UNIVERSIDAD DE VALPARAÍSO"
+      },
+      pasajero: {
+        nombres: "PEDRO PABLO",
+        apellidos: "GARCÍA MUÑOZ",
+        rut: "18.765.432-1"
+      }
+    };
+
+    const html = await ticketTemplate(mockData);
+    res.send(html);
+  } catch (error) {
+    console.error("Error en previewConvenios:", error);
+    res.status(500).send("Error al generar la vista previa del ticket de convenios");
+  }
+};
+

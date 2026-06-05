@@ -18,6 +18,7 @@ app.use("/api/pdf-mail", pdfMailRoutes);
 const previewController = require("./controllers/previewController");
 app.get("/preview-ticket", previewController.previewTicket);
 app.get("/preview-corporate", previewController.previewCorporate);
+app.get("/preview-convenios", previewController.previewConvenios);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));

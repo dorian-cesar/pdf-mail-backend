@@ -168,11 +168,6 @@ const modernCorporateTicket = async (data) => {
             font-size: 10px;
         }
 
-        .page-break {
-            page-break-before: always;
-            break-before: page;
-        }
-
         @media print {
             body {
                 padding: 0;
@@ -306,66 +301,6 @@ const modernCorporateTicket = async (data) => {
 
         <div class="footer-note">
             BOLETO COMPRADO EN PORTAL DE CONVENIOS – NO ANULAR O DEVOLVER EN BOLETERÍAS.
-        </div>
-
-        <!-- SEGUNDA PÁGINA: CONDICIONES DEL SERVICIO -->
-        <div class="page-break"></div>
-        <div class="terms-container" style="padding-top: 80px;">
-            <div class="header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ff6600; padding-bottom: 10px; margin-bottom: 20px;">
-                <h3 style="color: #ff6600; font-weight: 800; font-size: 16px; margin: 0;">CONDICIONES DEL SERVICIO</h3>
-                ${data.logoBase64 ? `<img src="data:image/png;base64,${data.logoBase64}" style="height: 40px;" alt="Pullman Bus">` : ""}
-            </div>
-            
-            <ul style="list-style-type: none; padding: 0; margin: 0;">
-                <li style="margin-bottom: 12px; padding-left: 15px; position: relative; font-size: 11px; color: #444; line-height: 1.5; text-align: justify;">
-                    <span style="position: absolute; left: 0; top: 2px; color: #ff6600; font-weight: bold;">•</span>
-                    <strong>Recuerda presentarte al menos una (1) hora antes de la hora señalada.</strong>
-                </li>
-                <li style="margin-bottom: 12px; padding-left: 15px; position: relative; font-size: 11px; color: #444; line-height: 1.5; text-align: justify;">
-                    <span style="position: absolute; left: 0; top: 2px; color: #ff6600; font-weight: bold;">•</span>
-                    Este pasaje es válido para la fecha y hora señalada. La hora de llegada al destino es aproximada.
-                </li>
-                <li style="margin-bottom: 12px; padding-left: 15px; position: relative; font-size: 11px; color: #444; line-height: 1.5; text-align: justify;">
-                    <span style="position: absolute; left: 0; top: 2px; color: #ff6600; font-weight: bold;">•</span>
-                    No se aceptarán boletos rotos, enmendados, ilegibles o con adulteración.
-                </li>
-                <li style="margin-bottom: 12px; padding-left: 15px; position: relative; font-size: 11px; color: #444; line-height: 1.5; text-align: justify;">
-                    <span style="position: absolute; left: 0; top: 2px; color: #ff6600; font-weight: bold;">•</span>
-                    La empresa se reserva el derecho de cambiar el N° de asiento o el horario por motivos de fuerza mayor.
-                </li>
-                <li style="margin-bottom: 12px; padding-left: 15px; position: relative; font-size: 11px; color: #444; line-height: 1.5; text-align: justify;">
-                    <span style="position: absolute; left: 0; top: 2px; color: #ff6600; font-weight: bold;">•</span>
-                    Los pasajes comprados a través del portal de Convenios Pullman Bus solo podrán anularse hasta cuatro (4) horas antes de la salida del viaje en <a href="https://convenios.pullmanbus.cl/mis-boletos" target="_blank" style="color: #ff6600; text-decoration: none; font-weight: 700;">convenios.pullmanbus.cl/mis-boletos</a>.
-                </li>
-                <li style="margin-bottom: 12px; padding-left: 15px; position: relative; font-size: 11px; color: #444; line-height: 1.5; text-align: justify;">
-                    <span style="position: absolute; left: 0; top: 2px; color: #ff6600; font-weight: bold;">•</span>
-                    En caso de anulación de pasajes, la empresa de buses se reserva el derecho de retener el quince por ciento (15%) del valor del pasaje (Art. 67 d.s. 212), siendo la devolución del 85% del valor del pasaje.
-                </li>
-                <li style="margin-bottom: 12px; padding-left: 15px; position: relative; font-size: 11px; color: #444; line-height: 1.5; text-align: justify;">
-                    <span style="position: absolute; left: 0; top: 2px; color: #ff6600; font-weight: bold;">•</span>
-                    Para devoluciones, reclamos o sugerencias, por favor contáctanos a través de nuestro canal de atención al cliente al correo: <a href="mailto:clientes@pullmanbus.cl" style="color: #ff6600; text-decoration: none; font-weight: 700;">clientes@pullmanbus.cl</a>
-                </li>
-                <li style="margin-bottom: 12px; padding-left: 15px; position: relative; font-size: 11px; color: #444; line-height: 1.5; text-align: justify;">
-                    <span style="position: absolute; left: 0; top: 2px; color: #ff6600; font-weight: bold;">•</span>
-                    Las devoluciones de dinero por anulación de pasajes son procesadas en un tiempo de entre siete (7) y diez (10) días hábiles.
-                </li>
-                <li style="margin-bottom: 12px; padding-left: 15px; position: relative; font-size: 11px; color: #444; line-height: 1.5; text-align: justify;">
-                    <span style="position: absolute; left: 0; top: 2px; color: #ff6600; font-weight: bold;">•</span>
-                    Cada pasajero tendrá derecho a treinta kilogramos (30 kg) de equipaje, sólo si su volumen no excede los 180 decímetros cúbicos (Art. 68). En caso del equipaje exceda 5 UTM, es responsabilidad del pasajero declararlo en las sucursales de ventas, a lo menos con 1 hora de antelación de la salida del bus para declararlo a la tripulación antes del viaje (Art. 70 d.s. 212/92 MT).
-                </li>
-                <li style="margin-bottom: 12px; padding-left: 15px; position: relative; font-size: 11px; color: #444; line-height: 1.5; text-align: justify;">
-                    <span style="position: absolute; left: 0; top: 2px; color: #ff6600; font-weight: bold;">•</span>
-                    En viajes de más de dos (2) horas, el pasajero debe entregar la información necesaria para evitar un sumario sanitario, según lo indica la Resolución Exenta 644/2021 del Ministerio de Salud. Esto incluye: Nombres, apellidos, RUT, DNI o pasaporte y números de teléfono de contacto.
-                </li>
-                <li style="margin-bottom: 12px; padding-left: 15px; position: relative; font-size: 11px; color: #444; line-height: 1.5; text-align: justify;">
-                    <span style="position: absolute; left: 0; top: 2px; color: #ff6600; font-weight: bold;">•</span>
-                    Es responsabilidad del pasajero contar con la documentación necesaria estipulada por el Gobierno de Chile.
-                </li>
-                <li style="margin-bottom: 12px; padding-left: 15px; position: relative; font-size: 11px; color: #444; line-height: 1.5; text-align: justify;">
-                    <span style="position: absolute; left: 0; top: 2px; color: #ff6600; font-weight: bold;">•</span>
-                    Para viajes internacionales los itinerarios están sujetos a cambios sin previo aviso o suspensión por condición climática adversa o restricciones sanitarias.
-                </li>
-            </ul>
         </div>
     </div>
 </body>
