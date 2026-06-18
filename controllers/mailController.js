@@ -76,6 +76,9 @@ exports.sendTicketByEmail = async (req, res) => {
     const pdfBuffer = await html_to_pdf.generatePdf(file, options);
 
     // 4. Configurar y enviar el correo vía SendGrid
+    const emailLogoBase64 = type === "pullman" ? logoBase64 : logoPartnerBase64;
+    const emailLogoName = type === "pullman" ? emailConfig.logo : "logo-boletos.png";
+
     const msg = {
       to: emailDestino,
       from: emailConfig.from,
@@ -90,24 +93,14 @@ exports.sendTicketByEmail = async (req, res) => {
           disposition: "attachment",
         },
         {
-          content: logoBase64,
-          filename: emailConfig.logo,
+          content: emailLogoBase64,
+          filename: emailLogoName,
           type: "image/png",
           disposition: "inline",
           content_id: "logo",
         },
       ],
     };
-
-    if (type !== "pullman" && logoPartnerBase64) {
-      msg.attachments.push({
-        content: logoPartnerBase64,
-        filename: "logo-boletos.png",
-        type: "image/png",
-        disposition: "inline",
-        content_id: "logoPartner",
-      });
-    }
 
     await sgMail.send(msg);
 
@@ -271,7 +264,7 @@ function boletosTicket(data) {
           
           <div style="margin-bottom: 24px; margin-top: 12px;">
             <img 
-              src="cid:logoPartner" 
+              src="cid:logo" 
               alt="boletos.la" 
               style="max-width: 140px; height: auto;"
               onerror="this.style.display='none'"
