@@ -99,6 +99,16 @@ exports.sendTicketByEmail = async (req, res) => {
       ],
     };
 
+    if (type !== "pullman" && logoPartnerBase64) {
+      msg.attachments.push({
+        content: logoPartnerBase64,
+        filename: "logo-boletos.png",
+        type: "image/png",
+        disposition: "inline",
+        content_id: "logoPartner",
+      });
+    }
+
     await sgMail.send(msg);
 
     res.status(200).json({
@@ -261,7 +271,7 @@ function boletosTicket(data) {
           
           <div style="margin-bottom: 24px; margin-top: 12px;">
             <img 
-              src="cid:logo" 
+              src="cid:logoPartner" 
               alt="boletos.la" 
               style="max-width: 140px; height: auto;"
               onerror="this.style.display='none'"
