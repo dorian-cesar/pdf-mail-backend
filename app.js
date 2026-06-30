@@ -15,6 +15,15 @@ app.use("/api/tickets", ticketRoutes);
 app.use("/api/mail", mailRoutes);
 app.use("/api/pdf-mail", pdfMailRoutes);
 
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Servidor activo y respondiendo",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
+});
+
 const previewController = require("./controllers/previewController");
 app.get("/preview-ticket", previewController.previewTicket);
 app.get("/preview-corporate", previewController.previewCorporate);
