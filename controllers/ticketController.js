@@ -65,7 +65,8 @@ exports.generateTicket = async (req, res) => {
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
         "--disable-gpu",
-        "--single-process",
+        "--no-zygote",
+        "--headless",
       ],
     };
 
