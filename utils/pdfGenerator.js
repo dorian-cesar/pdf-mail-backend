@@ -3,13 +3,13 @@
  * Utilidad para generar PDFs usando Puppeteer directamente,
  * apuntando al Chromium del sistema en entornos AWS/Linux.
  *
- * Reemplaza html-pdf-node para tener control total sobre el proceso.
+ * Usa una instancia persistente del browser para evitar el costo de
+ * lanzar/cerrar Chromium en cada petición (más rápido y estable).
  */
 
-const path = require("path");
+const fs = require("fs");
 
 // Usa el puppeteer que ya viene con html-pdf-node (ya instalado)
-// para no tener que instalar nada extra
 let puppeteer;
 try {
   puppeteer = require("html-pdf-node/node_modules/puppeteer");
@@ -17,24 +17,60 @@ try {
   puppeteer = require("puppeteer");
 }
 
-// Ruta al Chromium: primero la variable de entorno, luego el sistema, luego el bundled
+// Ruta al Chromium del sistema
 function getChromiumPath() {
   if (process.env.CHROMIUM_PATH) return process.env.CHROMIUM_PATH;
-
   const systemPaths = [
     "/usr/bin/chromium",
     "/usr/bin/chromium-browser",
     "/usr/bin/google-chrome",
     "/usr/bin/google-chrome-stable",
   ];
-
-  const fs = require("fs");
   for (const p of systemPaths) {
     if (fs.existsSync(p)) return p;
   }
-
-  // Fallback al bundled de puppeteer
   return undefined;
+}
+
+const LAUNCH_OPTIONS = {
+  headless: true,
+  args: [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    "--no-zygote",
+  ],
+};
+
+const executablePath = getChromiumPath();
+if (executablePath) LAUNCH_OPTIONS.executablePath = executablePath;
+
+// Instancia única del browser (se reutiliza entre peticiones)
+let browserInstance = null;
+
+async function getBrowser() {
+  if (browserInstance) {
+    try {
+      // Verificar que sigue conectado
+      const pages = await browserInstance.pages();
+      if (pages !== undefined) return browserInstance;
+    } catch {
+      // Browser crashed o fue cerrado, lo relanzamos
+      browserInstance = null;
+    }
+  }
+
+  console.log("[pdfGenerator] Lanzando Chromium...");
+  browserInstance = await puppeteer.launch(LAUNCH_OPTIONS);
+
+  // Si el browser se cierra inesperadamente, limpiar la referencia
+  browserInstance.on("disconnected", () => {
+    console.log("[pdfGenerator] Chromium desconectado, se relanzara en la proxima peticion.");
+    browserInstance = null;
+  });
+
+  return browserInstance;
 }
 
 /**
@@ -44,27 +80,10 @@ function getChromiumPath() {
  * @returns {Promise<Buffer>} - Buffer del PDF generado
  */
 async function generatePdfFromHtml(html, pdfOptions = {}) {
-  const executablePath = getChromiumPath();
-
-  const launchOptions = {
-    headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-gpu",
-      "--no-zygote",
-    ],
-  };
-
-  if (executablePath) {
-    launchOptions.executablePath = executablePath;
-  }
-
-  const browser = await puppeteer.launch(launchOptions);
+  const browser = await getBrowser();
+  const page = await browser.newPage();
 
   try {
-    const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "domcontentloaded", timeout: 30000 });
 
     const pdfBuffer = await page.pdf({
@@ -75,7 +94,8 @@ async function generatePdfFromHtml(html, pdfOptions = {}) {
 
     return pdfBuffer;
   } finally {
-    await browser.close();
+    // Cerrar solo la pagina, NO el browser (se reutiliza)
+    await page.close().catch(() => {});
   }
 }
 
