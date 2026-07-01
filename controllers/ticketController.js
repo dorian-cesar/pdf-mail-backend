@@ -1,4 +1,4 @@
-const html_to_pdf = require("html-pdf-node");
+const { generatePdfFromHtml } = require("../utils/pdfGenerator");
 const { PDFDocument } = require("pdf-lib");
 const path = require("path");
 
@@ -54,26 +54,8 @@ exports.generateTicket = async (req, res) => {
       selectedTemplate({ ...data, logoBase64, logoPartnerBase64 }),
     );
 
-    // 2. Configuración de generación
-    // En servidores AWS/Linux, usar el Chromium del sistema en lugar del bundled de Puppeteer
-    let options = {
-      format: "A4",
-      printBackground: true,
-      executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium",
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--no-zygote",
-        "--headless",
-      ],
-    };
-
-    let file = { content: html };
-
-    // 3. Generar PDF
-    const pdfBuffer = await html_to_pdf.generatePdf(file, options);
+    // 2. Generar PDF con el generador propio (usa Chromium del sistema)
+    const pdfBuffer = await generatePdfFromHtml(html);
 
     // 4. Metadatos
     const pdfDoc = await PDFDocument.load(pdfBuffer);

@@ -3,7 +3,7 @@ const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const sgMail = require("@sendgrid/mail");
-const html_to_pdf = require("html-pdf-node");
+const { generatePdfFromHtml } = require("../utils/pdfGenerator");
 const fs = require("fs");
 
 exports.sendTicketByEmail = async (req, res) => {
@@ -59,26 +59,8 @@ exports.sendTicketByEmail = async (req, res) => {
       selectedTemplate({ ...data, logoBase64, logoPartnerBase64 }),
     );
 
-    // 2. Configuración para la generación del PDF
-    // En servidores AWS/Linux, usar el Chromium del sistema en lugar del bundled de Puppeteer
-    const options = {
-      format: "A4",
-      printBackground: true,
-      executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium",
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--no-zygote",
-        "--headless",
-      ],
-    };
-
-    const file = { content: html };
-
-    // 3. Generar el PDF (Buffer)
-    const pdfBuffer = await html_to_pdf.generatePdf(file, options);
+    // 2. Generar el PDF con el generador propio (usa Chromium del sistema)
+    const pdfBuffer = await generatePdfFromHtml(html);
 
     // 4. Configurar y enviar el correo vía SendGrid
     const emailLogoBase64 = type === "pullman" ? logoBase64 : logoPartnerBase64;
