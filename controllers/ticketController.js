@@ -55,13 +55,17 @@ exports.generateTicket = async (req, res) => {
     );
 
     // 2. Configuración de generación
+    // En servidores AWS/Linux, usar el Chromium del sistema en lugar del bundled de Puppeteer
     let options = {
       format: "A4",
       printBackground: true,
+      executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium",
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--single-process",
       ],
     };
 

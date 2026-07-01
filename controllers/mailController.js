@@ -60,13 +60,17 @@ exports.sendTicketByEmail = async (req, res) => {
     );
 
     // 2. Configuración para la generación del PDF
+    // En servidores AWS/Linux, usar el Chromium del sistema en lugar del bundled de Puppeteer
     const options = {
       format: "A4",
       printBackground: true,
+      executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium",
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--single-process",
       ],
     };
 
