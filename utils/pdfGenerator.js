@@ -18,8 +18,7 @@ function buildLaunchOptions() {
   delete env.DBUS_SESSION_BUS_ADDRESS;
 
   const opts = {
-    headless: true,
-    pipe: true,
+    headless: "new",
     timeout: 60000,
     env,
     args: [
@@ -27,7 +26,6 @@ function buildLaunchOptions() {
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
       "--disable-gpu",
-      "--disable-features=Translate",
     ],
   };
 
