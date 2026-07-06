@@ -9,36 +9,8 @@
 
 const fs = require("fs");
 
-// Usa el puppeteer que ya viene con html-pdf-node (ya instalado)
-let puppeteer;
-try {
-  puppeteer = require("html-pdf-node/node_modules/puppeteer");
-} catch {
-  puppeteer = require("puppeteer");
-}
-
-// Ruta al Chromium
-function getChromiumPath() {
-  // 1. Chromium bundled de puppeteer (versión exacta compatible con el CDP)
-  try {
-    const ep = puppeteer.executablePath();
-    if (ep && fs.existsSync(ep)) {
-      console.log(`[pdfGenerator] Chromium bundled: ${ep}`);
-      return ep;
-    }
-  } catch (e) {
-    console.warn("[pdfGenerator] executablePath() falló:", e.message);
-  }
-
-  // 2. Variable de entorno explícita como fallback
-  if (process.env.CHROMIUM_PATH && fs.existsSync(process.env.CHROMIUM_PATH)) {
-    console.log(`[pdfGenerator] CHROMIUM_PATH: ${process.env.CHROMIUM_PATH}`);
-    return process.env.CHROMIUM_PATH;
-  }
-
-  console.warn("[pdfGenerator] No se encontró Chromium.");
-  return undefined;
-}
+// Usa puppeteer instalado como dependencia directa
+const puppeteer = require("puppeteer");
 
 function buildLaunchOptions() {
   const opts = {
@@ -50,14 +22,18 @@ function buildLaunchOptions() {
       "--disable-dev-shm-usage",
       "--disable-gpu",
       "--no-zygote",
-      "--disable-extensions",
     ],
   };
-  const executablePath = getChromiumPath();
-  if (executablePath) {
-    opts.executablePath = executablePath;
-    console.log(`[pdfGenerator] executablePath: ${executablePath}`);
+
+  // Solo forzar executablePath si se define explicitamente en .env
+  if (process.env.CHROMIUM_PATH && fs.existsSync(process.env.CHROMIUM_PATH)) {
+    opts.executablePath = process.env.CHROMIUM_PATH;
+    console.log(`[pdfGenerator] executablePath: ${process.env.CHROMIUM_PATH}`);
+  } else {
+    // Dejar que puppeteer use su propio Chrome descargado
+    console.log(`[pdfGenerator] Usando Chrome descargado por puppeteer`);
   }
+
   return opts;
 }
 
