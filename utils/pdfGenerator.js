@@ -19,32 +19,66 @@ try {
 
 // Ruta al Chromium del sistema
 function getChromiumPath() {
-  if (process.env.CHROMIUM_PATH) return process.env.CHROMIUM_PATH;
+  // Si hay variable de entorno, usarla solo si el archivo existe en disco
+  if (process.env.CHROMIUM_PATH) {
+    if (fs.existsSync(process.env.CHROMIUM_PATH)) {
+      return process.env.CHROMIUM_PATH;
+    } else {
+      console.warn(
+        `[pdfGenerator] CHROMIUM_PATH="${process.env.CHROMIUM_PATH}" no encontrado en disco, buscando alternativas...`
+      );
+    }
+  }
+
+  // Rutas comunes en Linux/AWS
   const systemPaths = [
     "/usr/bin/chromium",
     "/usr/bin/chromium-browser",
     "/usr/bin/google-chrome",
     "/usr/bin/google-chrome-stable",
+    "/snap/bin/chromium",
   ];
   for (const p of systemPaths) {
-    if (fs.existsSync(p)) return p;
+    if (fs.existsSync(p)) {
+      console.log(`[pdfGenerator] Chromium encontrado en ruta del sistema: ${p}`);
+      return p;
+    }
   }
+
+  // Usar el Chromium descargado por puppeteer como último recurso
+  try {
+    const ep = puppeteer.executablePath();
+    if (ep && fs.existsSync(ep)) {
+      console.log(`[pdfGenerator] Usando Chromium bundled de puppeteer: ${ep}`);
+      return ep;
+    }
+  } catch (e) {
+    console.warn("[pdfGenerator] No se pudo obtener executablePath de puppeteer:", e.message);
+  }
+
+  console.warn("[pdfGenerator] No se encontró ningún ejecutable de Chromium. Puppeteer usará su default.");
   return undefined;
 }
 
-const LAUNCH_OPTIONS = {
-  headless: true,
-  args: [
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-    "--disable-gpu",
-    "--no-zygote",
-  ],
-};
-
-const executablePath = getChromiumPath();
-if (executablePath) LAUNCH_OPTIONS.executablePath = executablePath;
+function buildLaunchOptions() {
+  const opts = {
+    headless: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--no-zygote",
+      "--disable-extensions",
+    ],
+  };
+  const executablePath = getChromiumPath();
+  if (executablePath) {
+    opts.executablePath = executablePath;
+    console.log(`[pdfGenerator] executablePath configurado: ${executablePath}`);
+  }
+  return opts;
+}
 
 // Instancia única del browser (se reutiliza entre peticiones)
 let browserInstance = null;
@@ -52,17 +86,19 @@ let browserInstance = null;
 async function getBrowser() {
   if (browserInstance) {
     try {
-      // Verificar que sigue conectado
+      // Verificar que sigue vivo llamando pages()
       const pages = await browserInstance.pages();
-      if (pages !== undefined) return browserInstance;
+      if (Array.isArray(pages)) return browserInstance;
     } catch {
       // Browser crashed o fue cerrado, lo relanzamos
+      console.warn("[pdfGenerator] Browser en estado inválido, relanzando...");
       browserInstance = null;
     }
   }
 
+  const launchOptions = buildLaunchOptions();
   console.log("[pdfGenerator] Lanzando Chromium...");
-  browserInstance = await puppeteer.launch(LAUNCH_OPTIONS);
+  browserInstance = await puppeteer.launch(launchOptions);
 
   // Si el browser se cierra inesperadamente, limpiar la referencia
   browserInstance.on("disconnected", () => {
@@ -84,7 +120,21 @@ async function generatePdfFromHtml(html, pdfOptions = {}) {
   const page = await browser.newPage();
 
   try {
-    await page.setContent(html, { waitUntil: "domcontentloaded", timeout: 30000 });
+    // Navegar a about:blank primero evita que Chromium trate el contenido
+    // como text/plain (bug en versiones recientes donde setContent renderiza CSS como texto)
+    await page.goto("about:blank", { waitUntil: "domcontentloaded" });
+
+    // Usar document.write fuerza el content-type text/html correctamente
+    await page.evaluate((htmlContent) => {
+      document.open("text/html", "replace");
+      document.write(htmlContent);
+      document.close();
+    }, html);
+
+    // Esperar a que la red esté quieta (imágenes base64, fuentes, etc.)
+    await page.waitForNetworkIdle({ idleTime: 500, timeout: 30000 }).catch(() => {
+      // Si falla el networkIdle (ej. fuentes de Google no cargan), continuar igual
+    });
 
     const pdfBuffer = await page.pdf({
       format: "A4",
