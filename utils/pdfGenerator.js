@@ -17,66 +17,48 @@ try {
   puppeteer = require("puppeteer");
 }
 
-// Ruta al Chromium del sistema
+// Ruta al Chromium
 function getChromiumPath() {
-  // 1. Si hay variable de entorno explícita y existe en disco, usarla
-  if (process.env.CHROMIUM_PATH) {
-    if (fs.existsSync(process.env.CHROMIUM_PATH)) {
-      console.log(`[pdfGenerator] Usando CHROMIUM_PATH: ${process.env.CHROMIUM_PATH}`);
-      return process.env.CHROMIUM_PATH;
-    } else {
-      console.warn(
-        `[pdfGenerator] CHROMIUM_PATH="${process.env.CHROMIUM_PATH}" no encontrado en disco, buscando alternativas...`
-      );
-    }
-  }
-
-  // 2. Usar el Chromium bundled de puppeteer (SIEMPRE compatible con su versión de CDP)
+  // 1. Chromium bundled de puppeteer (versión exacta compatible con el CDP)
   try {
     const ep = puppeteer.executablePath();
     if (ep && fs.existsSync(ep)) {
-      console.log(`[pdfGenerator] Usando Chromium bundled de puppeteer: ${ep}`);
+      console.log(`[pdfGenerator] Chromium bundled: ${ep}`);
       return ep;
     }
   } catch (e) {
-    console.warn("[pdfGenerator] No se pudo obtener executablePath de puppeteer:", e.message);
+    console.warn("[pdfGenerator] executablePath() falló:", e.message);
   }
 
-  // 3. Último recurso: rutas del sistema (puede ser incompatible si fue actualizado)
-  const systemPaths = [
-    "/usr/bin/chromium",
-    "/usr/bin/chromium-browser",
-    "/usr/bin/google-chrome",
-    "/usr/bin/google-chrome-stable",
-    "/snap/bin/chromium",
-  ];
-  for (const p of systemPaths) {
-    if (fs.existsSync(p)) {
-      console.warn(`[pdfGenerator] ⚠️  Usando Chromium del sistema (puede ser incompatible): ${p}`);
-      return p;
-    }
+  // 2. Variable de entorno explícita como fallback
+  if (process.env.CHROMIUM_PATH && fs.existsSync(process.env.CHROMIUM_PATH)) {
+    console.log(`[pdfGenerator] CHROMIUM_PATH: ${process.env.CHROMIUM_PATH}`);
+    return process.env.CHROMIUM_PATH;
   }
 
-  console.warn("[pdfGenerator] No se encontró ningún ejecutable de Chromium.");
+  console.warn("[pdfGenerator] No se encontró Chromium.");
   return undefined;
 }
 
 function buildLaunchOptions() {
   const opts = {
     headless: true,
+    timeout: 60000,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
       "--disable-gpu",
       "--no-zygote",
+      "--single-process",
       "--disable-extensions",
+      "--disable-features=site-per-process",
     ],
   };
   const executablePath = getChromiumPath();
   if (executablePath) {
     opts.executablePath = executablePath;
-    console.log(`[pdfGenerator] executablePath configurado: ${executablePath}`);
+    console.log(`[pdfGenerator] executablePath: ${executablePath}`);
   }
   return opts;
 }
