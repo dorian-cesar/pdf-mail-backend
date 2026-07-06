@@ -14,14 +14,13 @@ const puppeteer = require("puppeteer");
 
 function buildLaunchOptions() {
   const opts = {
-    headless: true,
+    headless: "new",
     timeout: 60000,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
       "--disable-gpu",
-      "--no-zygote",
     ],
   };
 
