@@ -13,23 +13,28 @@ const fs = require("fs");
 const puppeteer = require("puppeteer");
 
 function buildLaunchOptions() {
+  // Limpiar DBUS del entorno que PM2 puede pasar con valor inválido
+  const env = { ...process.env };
+  delete env.DBUS_SESSION_BUS_ADDRESS;
+
   const opts = {
-    headless: "new",
+    headless: true,
+    pipe: true,
     timeout: 60000,
+    env,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
       "--disable-gpu",
+      "--disable-features=Translate",
     ],
   };
 
-  // Solo forzar executablePath si se define explicitamente en .env
   if (process.env.CHROMIUM_PATH && fs.existsSync(process.env.CHROMIUM_PATH)) {
     opts.executablePath = process.env.CHROMIUM_PATH;
     console.log(`[pdfGenerator] executablePath: ${process.env.CHROMIUM_PATH}`);
   } else {
-    // Dejar que puppeteer use su propio Chrome descargado
     console.log(`[pdfGenerator] Usando Chrome descargado por puppeteer`);
   }
 
