@@ -13,34 +13,24 @@ const fs = require("fs");
 const puppeteer = require("puppeteer");
 
 function buildLaunchOptions() {
-  // El binario real /usr/lib/chromium/chromium requiere estas vars del wrapper
-  const env = {
-    ...process.env,
-    CHROME_WRAPPER: "/usr/bin/chromium",
-    CHROME_DESKTOP: "chromium.desktop",
-    CHROME_VERSION_EXTRA: "built on Debian GNU/Linux 12 (bookworm)",
-  };
-  // Quitar DBUS inválido que PM2 puede inyectar
-  delete env.DBUS_SESSION_BUS_ADDRESS;
-
   const opts = {
     headless: "new",
-    pipe: true,
-    timeout: 60000,
-    env,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
       "--disable-gpu",
+      "--no-zygote",
+      "--disable-software-rasterizer"
     ],
   };
 
+  // Usamos el path del .env solo si está configurado y existe
   if (process.env.CHROMIUM_PATH && fs.existsSync(process.env.CHROMIUM_PATH)) {
     opts.executablePath = process.env.CHROMIUM_PATH;
-    console.log(`[pdfGenerator] executablePath: ${process.env.CHROMIUM_PATH}`);
+    console.log(`[pdfGenerator] Usando CHROMIUM_PATH: ${process.env.CHROMIUM_PATH}`);
   } else {
-    console.log(`[pdfGenerator] Usando Chrome descargado por puppeteer`);
+    console.log(`[pdfGenerator] Usando Chromium integrado de puppeteer`);
   }
 
   return opts;
