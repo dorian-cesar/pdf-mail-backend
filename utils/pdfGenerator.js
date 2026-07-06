@@ -13,12 +13,19 @@ const fs = require("fs");
 const puppeteer = require("puppeteer");
 
 function buildLaunchOptions() {
-  // Limpiar DBUS del entorno que PM2 puede pasar con valor inválido
-  const env = { ...process.env };
+  // El binario real /usr/lib/chromium/chromium requiere estas vars del wrapper
+  const env = {
+    ...process.env,
+    CHROME_WRAPPER: "/usr/bin/chromium",
+    CHROME_DESKTOP: "chromium.desktop",
+    CHROME_VERSION_EXTRA: "built on Debian GNU/Linux 12 (bookworm)",
+  };
+  // Quitar DBUS inválido que PM2 puede inyectar
   delete env.DBUS_SESSION_BUS_ADDRESS;
 
   const opts = {
     headless: "new",
+    pipe: true,
     timeout: 60000,
     env,
     args: [
