@@ -19,9 +19,10 @@ try {
 
 // Ruta al Chromium del sistema
 function getChromiumPath() {
-  // Si hay variable de entorno, usarla solo si el archivo existe en disco
+  // 1. Si hay variable de entorno explícita y existe en disco, usarla
   if (process.env.CHROMIUM_PATH) {
     if (fs.existsSync(process.env.CHROMIUM_PATH)) {
+      console.log(`[pdfGenerator] Usando CHROMIUM_PATH: ${process.env.CHROMIUM_PATH}`);
       return process.env.CHROMIUM_PATH;
     } else {
       console.warn(
@@ -30,22 +31,7 @@ function getChromiumPath() {
     }
   }
 
-  // Rutas comunes en Linux/AWS
-  const systemPaths = [
-    "/usr/bin/chromium",
-    "/usr/bin/chromium-browser",
-    "/usr/bin/google-chrome",
-    "/usr/bin/google-chrome-stable",
-    "/snap/bin/chromium",
-  ];
-  for (const p of systemPaths) {
-    if (fs.existsSync(p)) {
-      console.log(`[pdfGenerator] Chromium encontrado en ruta del sistema: ${p}`);
-      return p;
-    }
-  }
-
-  // Usar el Chromium descargado por puppeteer como último recurso
+  // 2. Usar el Chromium bundled de puppeteer (SIEMPRE compatible con su versión de CDP)
   try {
     const ep = puppeteer.executablePath();
     if (ep && fs.existsSync(ep)) {
@@ -56,7 +42,22 @@ function getChromiumPath() {
     console.warn("[pdfGenerator] No se pudo obtener executablePath de puppeteer:", e.message);
   }
 
-  console.warn("[pdfGenerator] No se encontró ningún ejecutable de Chromium. Puppeteer usará su default.");
+  // 3. Último recurso: rutas del sistema (puede ser incompatible si fue actualizado)
+  const systemPaths = [
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+    "/snap/bin/chromium",
+  ];
+  for (const p of systemPaths) {
+    if (fs.existsSync(p)) {
+      console.warn(`[pdfGenerator] ⚠️  Usando Chromium del sistema (puede ser incompatible): ${p}`);
+      return p;
+    }
+  }
+
+  console.warn("[pdfGenerator] No se encontró ningún ejecutable de Chromium.");
   return undefined;
 }
 
