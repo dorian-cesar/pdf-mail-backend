@@ -64,7 +64,8 @@ exports.sendTicketByEmail = async (req, res) => {
 
     // 4. Configurar y enviar el correo vía SendGrid
     const emailLogoBase64 = type === "pullman" ? logoBase64 : logoPartnerBase64;
-    const emailLogoName = type === "pullman" ? emailConfig.logo : "logo-boletos.png";
+    const emailLogoName =
+      type === "pullman" ? emailConfig.logo : "logo-boletos.png";
 
     const msg = {
       to: emailDestino,
@@ -208,6 +209,89 @@ exports.sendCorporateEmail = async (req, res) => {
     console.error("Error en sendCorporateEmail:", error.message);
     res.status(500).json({
       error: "Error al enviar el correo del formulario corporativo",
+      details: error.response?.body || error.message,
+    });
+  }
+};
+
+// Controlador para enviar por correo la notificación de anulación de boleto
+exports.sendCancellationEmail = async (req, res) => {
+  const { emailDestino, type, ...data } = req.body;
+
+  if (!emailDestino) {
+    return res.status(400).json({
+      error: "Falta campo obligatorio: emailDestino",
+    });
+  }
+
+  try {
+    const emailConfig = resolveCancellationEmailConfig(type, data);
+
+    if (!emailConfig.apiKey) {
+      throw new Error(`No existe API key configurada para el tipo: ${type}`);
+    }
+
+    sgMail.setApiKey(emailConfig.apiKey);
+
+    // Determinar qué logo usar para el header (el enviado en el body o el del config)
+    const logoFile = req.body.logo || emailConfig.logo;
+    const logoPath = path.join(__dirname, "../public/images", logoFile);
+    const partnerLogoPath = path.join(
+      __dirname,
+      "../public/images/logo-boletos.png",
+    );
+
+    let logoBase64 = "";
+    let logoPartnerBase64 = "";
+
+    try {
+      if (fs.existsSync(logoPath)) {
+        logoBase64 = fs.readFileSync(logoPath).toString("base64");
+      }
+      if (fs.existsSync(partnerLogoPath)) {
+        logoPartnerBase64 = fs.readFileSync(partnerLogoPath).toString("base64");
+      }
+    } catch (err) {
+      console.error("Error al leer los logos:", err.message);
+    }
+
+    // Configurar y enviar el correo vía SendGrid sin PDF adjunto
+    const emailLogoBase64 = type === "pullman" ? logoBase64 : logoPartnerBase64;
+    const emailLogoName =
+      type === "pullman" ? emailConfig.logo : "logo-boletos.png";
+    const pasajeroNombre =
+      data.pasajeroNombre ||
+      (data.pasajero?.nombres
+        ? `${data.pasajero.nombres} ${data.pasajero.apellidos || ""}`
+        : "Pasajero/a");
+
+    const msg = {
+      to: emailDestino,
+      from: emailConfig.from,
+      subject: `Tu pasaje ha sido anulado`,
+      text: `Hola ${pasajeroNombre}, tu pasaje ha sido anulado con éxito.`,
+      html: emailConfig.html,
+      attachments: [
+        {
+          content: emailLogoBase64,
+          filename: emailLogoName,
+          type: "image/png",
+          disposition: "inline",
+          content_id: "logo",
+        },
+      ],
+    };
+
+    await sgMail.send(msg);
+
+    res.status(200).json({
+      success: true,
+      message: `Correo de anulación enviado con éxito a ${emailDestino}`,
+    });
+  } catch (error) {
+    console.error("Error en sendCancellationEmail:", error.message);
+    res.status(500).json({
+      error: "Error al procesar el envío del correo de anulación",
       details: error.response?.body || error.message,
     });
   }
@@ -493,6 +577,340 @@ function pullmanTicket(data) {
                                                         <tr>
                                                             <td style="font-size:14px; color:#333; font-weight:600;">
                                                                 ${data.pasajero?.nombres} ${data.pasajero?.apellidos || ""}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Contact & footer -->
+                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                                style="margin-top:16px;">
+                                <tr>
+                                    <td align="center" style="padding:18px 8px 8px;">
+                                        <div style="font-size:14px; font-weight:700; color:#333; margin-bottom:10px;">
+                                            ¿Necesitas ayuda?</div>
+                                        <div style="font-size:13px; color:#333; margin-bottom:8px;">Tel: +56 2 3304 8632
+                                            • Email: clientes@pullmanbus.cl</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="padding:14px 8px 28px;">
+                                        <div style="font-size:11px; color:#666; line-height:1.6; text-align:center;">
+                                            <strong>pullmanbus.cl</strong> · Todos los derechos reservados.
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>
+  `;
+}
+
+function resolveCancellationEmailConfig(type, data) {
+  switch (type) {
+    case "pullman":
+      return {
+        apiKey: process.env.SENDGRID_API_KEY_CONVENIOS,
+        logo: "logo-pullmanbus.png",
+        from: process.env.EMAIL_FROM_CONVENIOS,
+        html: pullmanCancellation(data),
+      };
+
+    default:
+      return {
+        apiKey: process.env.SENDGRID_API_KEY_BOLETOS,
+        logo: "logo-boletos.png",
+        from: process.env.EMAIL_FROM_BOLETOS,
+        html: boletosCancellation(data),
+      };
+  }
+}
+
+function boletosCancellation(data) {
+  return `
+   <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; width: 100%;">
+          
+          <div style="margin-bottom: 24px; margin-top: 12px;">
+            <img 
+              src="cid:logo" 
+              alt="boletos.la" 
+              style="max-width: 140px; height: auto;"
+              onerror="this.style.display='none'"
+            >
+          </div>
+          
+          <p style="font-size: 16px; line-height: 1.5; margin: 0 0 16px 0; color: #333;">
+            Hola ${data.pasajeroNombre || (data.pasajero?.nombres ? `${data.pasajero.nombres} ${data.pasajero.apellidos || ""}` : "Pasajero/a")},
+          </p>
+          
+          <p style="font-size: 16px; line-height: 1.5; margin: 0 0 16px 0; color: #d32f2f; font-weight: 600;">
+            Tu boleto ha sido anulado con éxito. 🚌
+          </p>
+          
+          <p style="font-size: 16px; line-height: 1.5; margin: 0 0 16px 0; color: #333;">
+            Te confirmamos que la anulación del pasaje ha sido procesada de acuerdo a las políticas correspondientes.
+          </p>
+          
+          <table style="width: 100%; margin-bottom: 24px;">
+            <tr>
+              <td style="background-color: #f5f7fa; padding: 16px; border-radius: 4px;">
+                <p style="font-size: 14px; line-height: 1.5; margin: 0 0 8px 0; color: #555;">
+                  <span style="font-weight: 600;">Código de reserva:</span> 
+                  <span style="color: #ff6700; font-weight: 600;">${data.reservaCodigo || "N/A"}</span>
+                </p>
+                ${
+                  data.numero_ticket || data.numeroBoleto
+                    ? `
+                <p style="font-size: 14px; line-height: 1.5; margin: 0 0 8px 0; color: #555;">
+                  <span style="font-weight: 600;">Nº de Boleto:</span> 
+                  <span>${data.numero_ticket || data.numeroBoleto}</span>
+                </p>`
+                    : ""
+                }
+                <hr style="border: none; border-top: 1px solid #eaeef2; margin: 12px 0;">
+                <p style="font-size: 14px; line-height: 1.5; margin: 0 0 4px 0; color: #555; font-weight: 600;">
+                  Detalles del viaje anulado:
+                </p>
+                <p style="font-size: 14px; line-height: 1.5; margin: 0; color: #555;">
+                  <strong>Origen:</strong> ${data.ciudad_origen || data.origen || "N/A"}<br>
+                  <strong>Destino:</strong> ${data.ciudad_destino || data.destino || "N/A"}<br>
+                  <strong>Fecha de viaje:</strong> ${data.fecha_viaje || data.fechaViaje || "N/A"}<br>
+                  ${data.hora_salida || data.horaSalida ? `<strong>Hora salida:</strong> ${data.hora_salida || data.horaSalida}<br>` : ""}
+                  ${data.numero_asiento || data.asientos ? `<strong>Asiento:</strong> ${data.numero_asiento || data.asientos}<br>` : ""}
+                </p>
+              </td>
+            </tr>
+          </table>
+          
+          <p style="font-size: 15px; line-height: 1.5; margin: 0 0 8px 0; color: #333;">
+            Gracias por utilizar <span style="color: #ff6700; font-weight: 600;">boletos.la</span>.
+          </p>
+          
+          <hr style="border: none; border-top: 1px solid #eaeef2; margin: 32px 0 24px 0;">
+          
+          <div style="font-size: 12px; color: #7b8a9b; line-height: 1.5;">
+            <p style="margin: 0 0 4px 0;">
+              © ${new Date().getFullYear()} boletos.la - Todos los derechos reservados
+            </p>
+            <p style="margin: 0; font-size: 11px;">
+              Este es un email automático, por favor no responder.
+            </p>
+          </div>
+          
+        </div>
+  `;
+}
+
+function pullmanCancellation(data) {
+  const pasajeroNombre =
+    data.pasajeroNombre ||
+    (data.pasajero?.nombres
+      ? `${data.pasajero.nombres} ${data.pasajero.apellidos || ""}`
+      : "Pasajero/a");
+  return `
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Anulación de Pasaje - Pullman Bus</title>
+    <style>
+        @media only screen and (max-width:600px) {
+            .container {
+                width: 100% !important;
+                padding: 12px !important;
+            }
+
+            .stack-column {
+                display: block !important;
+                width: 100% !important;
+            }
+
+            .ticket-padding {
+                padding: 18px !important;
+            }
+
+            .badge {
+                display: inline-block !important;
+                padding: 10px 16px !important;
+            }
+
+            .two-col td {
+                display: block !important;
+                width: 100% !important;
+            }
+        }
+    </style>
+</head>
+
+<body style="margin:0; padding:0; background-color:#f5f5f5; font-family: Arial, Helvetica, sans-serif; color:#333;">
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+            <td align="center" style="padding:24px;">
+                <table class="container" width="600" cellpadding="0" cellspacing="0" role="presentation"
+                    style="width:600px; max-width:600px; background-color:#f5f5f5;">
+                    <tr>
+                        <td style="padding:20px;">
+
+                            <!-- Header -->
+                          <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                              <td align="center" style="padding:12px 0 24px;">
+                                <img 
+                                  src="cid:logo"
+                                  alt="Pullmanbus.cl"
+                                  width="140"
+                                  style="display:block; max-width:140px; height:auto;"
+                                  onerror="this.style.display='none'"
+                                >
+                              </td>
+                            </tr>
+                          </table>
+                            <!-- Success message -->
+                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                <tr>
+                                    <td align="center" style="padding:8px 0 18px;">
+                                        <h1 style="font-size:20px; margin:0 0 6px; font-weight:600; color:#d32f2f;">Anulación Procesada</h1>
+                                        <p style="margin:0; font-size:14px; color:#666;">Hola ${pasajeroNombre}, tu pasaje ha sido anulado con éxito.</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Ticket card -->
+                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                                style="background:#ffffff; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.08); overflow:hidden;">
+                                <tr>
+                                    <td class="ticket-padding" style="padding:26px;">
+                                        <!-- Ticket header -->
+                                        <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                            <tr>
+                                                <td style="text-align:center; padding-bottom:14px;">
+                                                    <div style="font-size:14px; font-weight:600; color:#333;">Detalle del pasaje anulado</div>
+                                                </td>
+                                            </tr>
+                                            ${
+                                              data.numero_ticket ||
+                                              data.numeroBoleto
+                                                ? `
+                                            <tr>
+                                                <td style="text-align:center;">
+                                                    <span class="badge"
+                                                        style="display:inline-block; background:#d32f2f; color:#fff; padding:10px 18px; border-radius:30px; font-weight:700; font-size:13px;">
+                                                        Nº DE BOLETO: ${data.numero_ticket || data.numeroBoleto}
+                                                    </span>
+                                                </td>
+                                            </tr>`
+                                                : ""
+                                            }
+                                        </table>
+
+                                        <div style="height:18px; line-height:18px; font-size:1px;">&nbsp;</div>
+
+                                        <!-- Details -->
+                                        <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                                            class="two-col" style="width:100%;">
+                                            <tr>
+                                                <td valign="top" style="padding:6px 8px; width:50%;">
+                                                    <table width="100%" cellpadding="0" cellspacing="0"
+                                                        role="presentation">
+                                                        <tr>
+                                                            <td
+                                                                style="font-size:11px; color:#666; font-weight:700; text-transform:uppercase; padding-bottom:6px;">
+                                                                Origen</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:14px; color:#333; font-weight:600;">
+                                                                ${data.ciudad_origen || data.origen || "N/A"}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td valign="top" style="padding:6px 8px; width:50%;">
+                                                    <table width="100%" cellpadding="0" cellspacing="0"
+                                                        role="presentation">
+                                                        <tr>
+                                                            <td
+                                                                style="font-size:11px; color:#666; font-weight:700; text-transform:uppercase; padding-bottom:6px;">
+                                                                Destino</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:14px; color:#333; font-weight:600;">
+                                                                ${data.ciudad_destino || data.destino || "N/A"}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td valign="top" style="padding:16px 8px 6px; width:50%;">
+                                                    <table width="100%" cellpadding="0" cellspacing="0"
+                                                        role="presentation">
+                                                        <tr>
+                                                            <td
+                                                                style="font-size:11px; color:#666; font-weight:700; text-transform:uppercase; padding-bottom:6px;">
+                                                                Fecha de viaje</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:14px; color:#333; font-weight:600;">
+                                                                ${data.fecha_viaje || data.fechaViaje || "N/A"}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td valign="top" style="padding:16px 8px 6px; width:50%;">
+                                                    <table width="100%" cellpadding="0" cellspacing="0"
+                                                        role="presentation">
+                                                        <tr>
+                                                            <td
+                                                                style="font-size:11px; color:#666; font-weight:700; text-transform:uppercase; padding-bottom:6px;">
+                                                                Hora salida</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:14px; color:#333; font-weight:600;">
+                                                                ${data.hora_salida || data.horaSalida || "N/A"}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td valign="top" style="padding:16px 8px 0; width:50%;">
+                                                    <table width="100%" cellpadding="0" cellspacing="0"
+                                                        role="presentation">
+                                                        <tr>
+                                                            <td
+                                                                style="font-size:11px; color:#666; font-weight:700; text-transform:uppercase; padding-bottom:6px;">
+                                                                Asiento</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:14px; color:#333; font-weight:600;">
+                                                                ${data.numero_asiento || data.asientos || "N/A"}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td valign="top" style="padding:16px 8px 0; width:50%;">
+                                                    <table width="100%" cellpadding="0" cellspacing="0"
+                                                        role="presentation">
+                                                        <tr>
+                                                            <td
+                                                                style="font-size:11px; color:#666; font-weight:700; text-transform:uppercase; padding-bottom:6px;">
+                                                                Pasajero</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="font-size:14px; color:#333; font-weight:600;">
+                                                                ${pasajeroNombre}</td>
                                                         </tr>
                                                     </table>
                                                 </td>
