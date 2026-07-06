@@ -14,25 +14,18 @@ const puppeteer = require("puppeteer");
 
 function buildLaunchOptions() {
   const opts = {
-    headless: "new",
+    headless: true, // Modo headless antiguo, el nuevo causa TargetClose en Debian
+    executablePath: "/usr/bin/chromium", // Usamos el del sistema directo
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
       "--disable-gpu",
-      "--no-zygote",
-      "--disable-software-rasterizer"
+      "--no-zygote"
     ],
   };
 
-  // Usamos el path del .env solo si está configurado y existe
-  if (process.env.CHROMIUM_PATH && fs.existsSync(process.env.CHROMIUM_PATH)) {
-    opts.executablePath = process.env.CHROMIUM_PATH;
-    console.log(`[pdfGenerator] Usando CHROMIUM_PATH: ${process.env.CHROMIUM_PATH}`);
-  } else {
-    console.log(`[pdfGenerator] Usando Chromium integrado de puppeteer`);
-  }
-
+  console.log(`[pdfGenerator] Forzando uso de Chromium del sistema: /usr/bin/chromium`);
   return opts;
 }
 
