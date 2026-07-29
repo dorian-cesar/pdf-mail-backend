@@ -263,8 +263,7 @@ ESTE DOCUMENTO ES UNA REPRESENTACION GRAFICA DE UN DOCUMENTO ELECTRONICO ( XML )
 Por Disposición de la SET, en el Decreto 312/18<br/>
 a los comprobantes innominados ( SIN NOMBRE ),<br/>
 no se les permite realizar Notas de Crédito,<br/>
-por lo que sugerimos mencionar el Número de CI o RUC.<br/><br/>
-
+por lo que sugerimos mencionar el Número de CI o RUC.<br/>
 PASADAS LAS 72 hs, NO SE ACEPTARAN RECLAMOS<br/><br/>
 
 Ejemplar Original
