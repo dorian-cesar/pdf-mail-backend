@@ -264,9 +264,9 @@ Por Disposición de la SET, en el Decreto 312/18<br/>
 a los comprobantes innominados ( SIN NOMBRE ),<br/>
 no se les permite realizar Notas de Crédito,<br/>
 por lo que sugerimos mencionar el Número de CI o RUC.<br/>
-PASADAS LAS 72 hs, NO SE ACEPTARAN RECLAMOS<br/><br/>
+PASADAS LAS 72 hs, NO SE ACEPTARAN RECLAMOS<br/>
+Ejemplar Original<br/>
 
-Ejemplar Original
 </div>
 
 <!-- FOOTER ORIGINAL -->
