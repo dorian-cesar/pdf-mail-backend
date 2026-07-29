@@ -181,6 +181,7 @@ body {
   <div class="detail-row"><span>RUC</span><span>80012667-0</span></div>
   <div class="detail-row"><span>Dirección</span><span>María Auxiliadora 874 esq. Rca Argentina</span></div>
   <div class="detail-row"><span>Factura</span><span>${data.numeroFactura}</span></div>
+  <div class="detail-row"><span>Timbrado</span><span>${data.timbrado || ""}</span></div>
 </div>
 
 <!-- RUTA -->
@@ -250,9 +251,7 @@ body {
 <!-- LEGAL COMPLETO (SIN RESUMIR) -->
 <div class="footer-note">
 Consulte la Validez de esta Factura Electrónica con el Número de CDC en:<br/>
-https://ekuatia.set.gov.py/consultas/<br/><br/>
-
-${data.cdc || ""}<br/><br/>
+https://ekuatia.set.gov.py/consultas/${(data.cdc || "").replace(/^https?:\/\/ekuatia\.set\.gov\.py\/consultas\/?/, "")}<br/><br/>
 
 ESTE DOCUMENTO ES UNA REPRESENTACION GRAFICA DE UN DOCUMENTO ELECTRONICO ( XML )<br/><br/>
 
