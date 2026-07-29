@@ -12,7 +12,7 @@ const modernTicket = (data) => `
 
 @page {
   size: A4;
-  margin: 10mm;
+  margin: 0;
 }
 
 body {
@@ -20,7 +20,9 @@ body {
   font-size:11px;
   color:#1a2332;
   background:#fff;
-  width:100%;
+  width:210mm;
+  height:297mm;
+  padding:12mm 15mm;
 }
 
 .ticket-container {
@@ -151,8 +153,8 @@ body {
 .footer-note {
   font-size:9px;
   text-align:center;
-  margin-top:6px;
-  line-height:1.25;
+  margin-top:10px;
+  line-height:1.3;
 }
 
 .company-info {
@@ -254,11 +256,18 @@ body {
 <!-- LEGAL COMPLETO (SIN RESUMIR) -->
 <div class="footer-note">
 Consulte la Validez de esta Factura Electrónica con el Número de CDC en:<br/>
-https://ekuatia.set.gov.py/consultas/${(data.cdc || "").replace(/^https?:\/\/ekuatia\.set\.gov\.py\/consultas\/?/, "")}<br/>
-ESTE DOCUMENTO ES UNA REPRESENTACION GRAFICA DE UN DOCUMENTO ELECTRONICO ( XML )<br/>
-Por Disposición de la SET, en el Decreto 312/18 a los comprobantes innominados ( SIN NOMBRE ),<br/>
-no se les permite realizar Notas de Crédito, por lo que sugerimos mencionar el Número de CI o RUC.<br/>
-PASADAS LAS 72 hs, NO SE ACEPTARAN RECLAMOS - Ejemplar Original
+https://ekuatia.set.gov.py/consultas/${(data.cdc || "").replace(/^https?:\/\/ekuatia\.set\.gov\.py\/consultas\/?/, "")}<br/><br/>
+
+ESTE DOCUMENTO ES UNA REPRESENTACION GRAFICA DE UN DOCUMENTO ELECTRONICO ( XML )<br/><br/>
+
+Por Disposición de la SET, en el Decreto 312/18<br/>
+a los comprobantes innominados ( SIN NOMBRE ),<br/>
+no se les permite realizar Notas de Crédito,<br/>
+por lo que sugerimos mencionar el Número de CI o RUC.<br/><br/>
+
+PASADAS LAS 72 hs, NO SE ACEPTARAN RECLAMOS<br/><br/>
+
+Ejemplar Original
 </div>
 
 <!-- FOOTER ORIGINAL -->
